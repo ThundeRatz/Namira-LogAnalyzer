@@ -362,14 +362,14 @@ class Analyzer:
                         self.game.ball_pos[key]['y'])
 
                     if(self.pass_last_kicker.team.name == self.game.right_team.name):
-                        self.check_risky_pass(ball1, ball2, False, False)
+                        self.check_risky_pass(ball1, ball2, True, False)
                         self.pass_r += 1
                         if(abs(ball1[0] - ball2[0]) > abs(ball1[1] - ball2[1])):
                             self.pass_in_width_r += 1
                         else:
                             self.pass_in_length_r += 1
                     else:
-                        self.check_risky_pass(ball1, ball2, True, False)
+                        self.check_risky_pass(ball1, ball2, False, False)
                         self.pass_l += 1
                         if(abs(ball1[0] - ball2[0]) > abs(ball1[1] - ball2[1])):
                             self.pass_in_width_l += 1
@@ -399,30 +399,36 @@ class Analyzer:
                     self.pass_last_kick_cycle = key
 
     def check_risky_pass(self, ball1, ball2, team, intercept):
-        if team:
+        if team: #Right
             offside_left = 0
 
             for agent in self.game.left_team.agents:
-                if agent.number != 1 and offside_left < agent.data[self.pass_last_kick_cycle]['x']:
+                if agent.number != 1 and offside_left > agent.data[self.pass_last_kick_cycle]['x']:
                     offside_left = agent.data[self.pass_last_kick_cycle]['x']
 
-            if ball1[0] >= offside_left and ball2[0] < offside_left:
+            if ball1[0] > offside_left and ball2[0] < offside_left:
+                print("\nOffside Left:", offside_left)
                 if intercept:
                     self.bad_risky_right += 1
+                    print("Bad right:", self.pass_last_kick_cycle)
                 else:
                     self.good_risky_right += 1
+                    print("Good right:", self.pass_last_kick_cycle)
         else:
             offside_right = 0
 
             for agent in self.game.right_team.agents:
-                if agent.number != 1 and offside_right > agent.data[self.pass_last_kick_cycle]['x']:
+                if agent.number != 1 and offside_right < agent.data[self.pass_last_kick_cycle]['x']:
                     offside_right = agent.data[self.pass_last_kick_cycle]['x']
 
-            if ball1[0] <= offside_right and ball2[0] > offside_right:
+            if ball1[0] < offside_right and ball2[0] > offside_right:
+                print("\nOffside Right:", offside_right)
                 if intercept:
                     self.bad_risky_left += 1
+                    print("Bad left:", self.pass_last_kick_cycle)
                 else:
                     self.good_risky_left += 1
+                    print("Good left:", self.pass_last_kick_cycle)
 
     def analyze(self):
         ''' pass, shoot, pass intercept, shot intercept, possesion ,  '''
