@@ -5,7 +5,7 @@ from loganalyzer.Game import *
 from loganalyzer.Analyzer import * 
 
 
-parser = Parser('Data/20190213193824-Namira_4-vs-CYRUS2018_312')
+parser = Parser('20210902214949-ThunderLeague_0-vs-oto_1')
 
 game = Game(parser)
 
@@ -31,7 +31,9 @@ print("moved Distance:"+str(analyzer.team_moved_distance_r ))
 print("Average Distance 10 Player: "+str(analyzer.average_distance_10p_r))
 print("Average Stamina 10 Player: "+str(analyzer.average_stamina_10p_r))
 print("Average Stamina Per distance 10 Player: "+str(analyzer.av_st_per_dist_10p_r ))
-print("Stamina per Distance:"+str(analyzer.used_per_distance_r )+"\n"+"\n")
+print("Stamina per Distance:"+str(analyzer.used_per_distance_r )+"\n")
+print("Good Risky Passes:"+str(analyzer.good_risky_right))
+print("Bad Risky Passes:"+str(analyzer.bad_risky_right)+"\n\n")
 
 
 print("Left Team :"+analyzer.game.left_team.name+"\n")
@@ -53,6 +55,8 @@ print("Average Distance 10 Player: "+str(analyzer.average_distance_10p_l))
 print("Average Stamina 10 Player: "+str(analyzer.average_stamina_10p_l))
 print("Average Stamina Per distance 10 Player: "+str(analyzer.av_st_per_dist_10p_l ))
 print("Stamina per Distance:"+str(analyzer.used_per_distance_l )+"\n")
+print("Good Risky Passes:"+str(analyzer.good_risky_left))
+print("Bad Risky Passes:"+str(analyzer.bad_risky_left)+"\n\n")
 
 
 for region in analyzer.regions:

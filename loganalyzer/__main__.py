@@ -49,7 +49,10 @@ def write_to_file(save_path, analyzer):
         "Average Distance 10": analyzer.average_distance_10p_r,
         "Average Stamina 10": analyzer.average_stamina_10p_r,
         "Average Stamina Per distance 10": analyzer.av_st_per_dist_10p_r,
-        "Stamina per ": analyzer.used_per_distance_r
+        "Stamina per ": analyzer.used_per_distance_r,
+        "Good risky ": analyzer.good_risky_right,
+        "Bad risky ": analyzer.bad_risky_right
+
     }
     # left TEAM
     left_team_data = {
@@ -74,7 +77,9 @@ def write_to_file(save_path, analyzer):
         "Average Distance 10": analyzer.average_distance_10p_l,
         "Average Stamina 10": analyzer.average_stamina_10p_l,
         "Average Stamina Per distance 10": analyzer.av_st_per_dist_10p_l,
-        "Stamina per ": analyzer.used_per_distance_r
+        "Stamina per ": analyzer.used_per_distance_r,
+        "Good risky ": analyzer.good_risky_left,
+        "Bad risky ": analyzer.bad_risky_left
     }
 
     ball_in_region_percentage = {}

@@ -16,11 +16,11 @@ class Agent_Region:
         with upper left corner (x1,y1) and bottom right corner (x2,y2)'''
         if (x > self.top_left[0] and x < self.bottom_right[0] and y > self.top_left[1] and y < self.bottom_right[1]) : 
             return True
-        else : 
+        else: 
             return False
 
 class Agent:
-    
+
     def __init__(self, number, team):
         self.team              = team
         self.number            = number
@@ -30,9 +30,9 @@ class Agent:
         self.tackle_count      = 0
         self.data              = {}
         self.result            = {"all_kick":[],"all_tackle":[],"true_kick":[],"true_tackle":[]}   
-        self.moved_distance    = 0 
+        self.moved_distance    = 0
         self.used_stamina      = 0
-        self.regions           =[]
+        self.regions           = []
         self.regions.append(Agent_Region((-52.5,-34),(-17.5,-11),"A"))
         self.regions.append(Agent_Region((-52.5,-11),(-17.5,11),"B"))
         self.regions.append(Agent_Region((-52.5,11),(-17.5,34),"C"))
