@@ -362,14 +362,14 @@ class Analyzer:
                         self.game.ball_pos[key]['y'])
 
                     if(self.pass_last_kicker.team.name == self.game.right_team.name):
-                        check_risky_pass(ball1, ball2, False, False)
+                        self.check_risky_pass(ball1, ball2, False, False)
                         self.pass_r += 1
                         if(abs(ball1[0] - ball2[0]) > abs(ball1[1] - ball2[1])):
                             self.pass_in_width_r += 1
                         else:
                             self.pass_in_length_r += 1
                     else:
-                        check_risky_pass(ball1, ball2, True, False)
+                        self.check_risky_pass(ball1, ball2, True, False)
                         self.pass_l += 1
                         if(abs(ball1[0] - ball2[0]) > abs(ball1[1] - ball2[1])):
                             self.pass_in_width_l += 1
@@ -389,10 +389,10 @@ class Analyzer:
 
                     if(self.game.get_last_kickers(key)[0].team.name == self.game.right_team.name):
                         self.intercept_r += 1
-                        check_risky_pass(ball1, ball2, False, True)
+                        self.check_risky_pass(ball1, ball2, False, True)
                     else:
                         self.intercept_l += 1
-                        check_risky_pass(ball1, ball2, True, True)
+                        self.check_risky_pass(ball1, ball2, True, True)
 
                     self.pass_status = 1
                     self.pass_last_kicker = self.game.get_last_kickers(key)[0]
@@ -406,7 +406,7 @@ class Analyzer:
                 if agent.number != 1 and offside_left < agent.data[self.pass_last_kick_cycle]['x']:
                     offside_left = agent.data[self.pass_last_kick_cycle]['x']
 
-            if ball1 >= offside_left and ball2 < offside_left:
+            if ball1[0] >= offside_left and ball2[0] < offside_left:
                 if intercept:
                     self.bad_risky_right += 1
                 else:
@@ -418,7 +418,7 @@ class Analyzer:
                 if agent.number != 1 and offside_right > agent.data[self.pass_last_kick_cycle]['x']:
                     offside_right = agent.data[self.pass_last_kick_cycle]['x']
 
-            if ball1 <= offside_right and ball2 > offside_right:
+            if ball1[0] <= offside_right and ball2[0] > offside_right:
                 if intercept:
                     self.bad_risky_left += 1
                 else:
