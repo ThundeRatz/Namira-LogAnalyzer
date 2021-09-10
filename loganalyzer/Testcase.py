@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from loganalyzer.Parser import *
-from loganalyzer.Game import *
-from loganalyzer.Analyzer import *
+from Parser import *
+from Game import *
+from Analyzer import *
 
 parser = Parser('20210902214949-ThunderLeague_0-vs-oto_1')
 
@@ -73,5 +73,5 @@ for agent in game.left_team.agents :
     for region in agent.regions:
         print(region.name, " Agent number ", str(agent.number), " owner_cycles: ", str(region.owner_cycles), " position_cycles: ", str(region.position_cycles))
 
-#Drawing Heatmap of the game
-analyzer.draw_heatmap(right_team = True, left_team= True)
+# Drawing Heatmap of the game
+# analyzer.draw_heatmap(right_team = True, left_team= True)

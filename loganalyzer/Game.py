@@ -1,4 +1,4 @@
-from loganalyzer.Team import *
+from Team import *
 
 
 class Game:

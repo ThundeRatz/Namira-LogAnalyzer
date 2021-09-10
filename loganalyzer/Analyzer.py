@@ -117,7 +117,7 @@ class Analyzer:
                     y = int(round(agent.data[cycle]['y'], 1)) + 33
                     for i in range(-4, 5):
                         for j in range(-4, 5):
-                            world[x + i][y + j] += 5 - abs(j)
+                            world[np.clip(x + i, 0, 104)][np.clip(y + j, 0, 66)] += 5 - abs(j)
 
         _, ax = plt.subplots()
         ax.set_xticks(np.arange(len([])))
@@ -317,14 +317,14 @@ class Analyzer:
                     ball2 = (self.game.ball_pos[key]['x'], self.game.ball_pos[key]['y'])
 
                     if self.pass_last_kicker.team.name == self.game.right_team.name:
-                        self.check_risky_pass(ball1, ball2, True, False)
+                        self.check_risky_pass(key, ball1, ball2, True, False)
                         self.pass_r += 1
                         if abs(ball1[0] - ball2[0]) > abs(ball1[1] - ball2[1]):
                             self.pass_in_width_r += 1
                         else:
                             self.pass_in_length_r += 1
                     else:
-                        self.check_risky_pass(ball1, ball2, False, False)
+                        self.check_risky_pass(key, ball1, ball2, False, False)
                         self.pass_l += 1
                         if abs(ball1[0] - ball2[0]) > abs(ball1[1] - ball2[1]):
                             self.pass_in_width_l += 1
@@ -342,16 +342,19 @@ class Analyzer:
 
                     if self.game.get_last_kickers(key)[0].team.name == self.game.right_team.name:
                         self.intercept_r += 1
-                        self.check_risky_pass(ball1, ball2, False, True)
+                        self.check_risky_pass(key, ball1, ball2, False, True)
                     else:
                         self.intercept_l += 1
-                        self.check_risky_pass(ball1, ball2, True, True)
+                        self.check_risky_pass(key, ball1, ball2, True, True)
 
                     self.pass_status = 1
                     self.pass_last_kicker = self.game.get_last_kickers(key)[0]
                     self.pass_last_kick_cycle = key
 
-    def check_risky_pass(self, ball1, ball2, team, intercept):
+    def check_risky_pass(self, key, ball1, ball2, team, intercept):
+        if math.sqrt((ball2[0] - ball1[0])**2 + (ball2[0] - ball1[0])**2) < 5.0:
+            return
+
         if team:
             offside_left = 0
 
@@ -361,7 +364,7 @@ class Analyzer:
 
             if ball1[0] > offside_left > ball2[0]:
                 print("\nOffside Left:", offside_left)
-                if intercept:
+                if intercept or self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] < offside_left:
                     self.bad_risky_right += 1
                     print("Bad right:", self.pass_last_kick_cycle)
                 else:
@@ -376,7 +379,7 @@ class Analyzer:
 
             if ball1[0] < offside_right < ball2[0]:
                 print("\nOffside Right:", offside_right)
-                if intercept:
+                if intercept or self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] > offside_right:
                     self.bad_risky_left += 1
                     print("Bad left:", self.pass_last_kick_cycle)
                 else:
