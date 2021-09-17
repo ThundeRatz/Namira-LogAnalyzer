@@ -44,6 +44,7 @@ class Analyzer:
         self.pass_last_kick_cycle = -1
         self.i = 0
         self.ball_owner = 0
+        self.ball_positions = []
 
         # Special Regions
         self.regions = []
@@ -78,6 +79,8 @@ class Analyzer:
         self.av_st_per_dist_10p_r = 0
         self.good_risky_right = 0
         self.bad_risky_right = 0
+        self.agent_right_states = []
+
 
         # Left TEAM
         self.status_l = 0  # Winner' 'Loser' 'Draw'
@@ -100,6 +103,7 @@ class Analyzer:
         self.av_st_per_dist_10p_l = 0
         self.good_risky_left = 0
         self.bad_risky_left = 0
+        self.agent_left_states = []
 
     def draw_heatmap(self, right_team=False, left_team=True):
         world = np.zeros((105, 75))
@@ -363,13 +367,11 @@ class Analyzer:
                     offside_left = agent.data[self.pass_last_kick_cycle]['x']
 
             if ball1[0] > offside_left > ball2[0]:
-                print("\nOffside Left:", offside_left)
+                self.check_risky_players(key)
                 if intercept or self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] < offside_left:
                     self.bad_risky_right += 1
-                    print("Bad right:", self.pass_last_kick_cycle)
                 else:
                     self.good_risky_right += 1
-                    print("Good right:", self.pass_last_kick_cycle)
         else:
             offside_right = 0
 
@@ -378,13 +380,55 @@ class Analyzer:
                     offside_right = agent.data[self.pass_last_kick_cycle]['x']
 
             if ball1[0] < offside_right < ball2[0]:
-                print("\nOffside Right:", offside_right)
+                self.check_risky_players(key)
                 if intercept or self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] > offside_right:
                     self.bad_risky_left += 1
-                    print("Bad left:", self.pass_last_kick_cycle)
                 else:
                     self.good_risky_left += 1
-                    print("Good left:", self.pass_last_kick_cycle)
+
+    def check_risky_players(self, key):           
+        # Aliados -> Esquerda
+
+        ball_x = self.game.ball_pos[self.pass_last_kick_cycle]['x']
+        ball_y = self.game.ball_pos[self.pass_last_kick_cycle]['y']
+
+        receive_x = self.game.ball_pos[key]['x']
+        receive_y = self.game.ball_pos[key]['y']
+        
+        velocity_x = self.game.ball_pos[self.pass_last_kick_cycle+1]['Vx']
+        velocity_y = self.game.ball_pos[self.pass_last_kick_cycle+1]['Vy']
+
+        pass_angle = math.atan2(receive_y - ball_y, receive_x - ball_x)
+
+        left_pass_states = []
+        right_pass_states = []
+
+        angle_candidates = []
+
+        for agent in self.game.left_team.agents:
+            player_data = agent.data[self.pass_last_kick_cycle]
+            player_angle = math.atan2(player_data['y'] - ball_y, player_data['x'] - ball_x)
+
+            if self.game.ball_pos[self.pass_last_kick_cycle]['x'] < player_data['x']:
+                left_pass_states.append((player_data['x'],player_data['y'], player_data['stamina']))
+                angle_candidates.append(abs(player_angle - pass_angle))
+
+        if len(angle_candidates) == 0:
+            return
+
+        self.agent_left_states.append(sorted(left_pass_states, key=lambda x: angle_candidates[left_pass_states.index(x)])[0])
+
+        angle_candidates = []
+        for agent in self.game.right_team.agents:
+            player_data = agent.data[self.pass_last_kick_cycle]
+            player_angle = math.atan2(player_data['y'] - ball_y, player_data['x'] - ball_x)
+
+            if self.game.ball_pos[self.pass_last_kick_cycle]['x'] < player_data['x']:
+                right_pass_states.append((player_data['x'],player_data['y'], player_data['stamina']))
+                angle_candidates.append(abs(player_angle - pass_angle))
+
+        self.agent_right_states.append((sorted(right_pass_states, key=lambda x: angle_candidates[right_pass_states.index(x)]) + 4*[None])[:4])
+        self.ball_positions.append((ball_x, ball_y, velocity_x, velocity_y))
 
     def analyze(self):
         '''pass, shoot, pass intercept, shot intercept, possesion'''
