@@ -77,8 +77,7 @@ class Analyzer:
         self.average_stamina_10p_r = 0
         self.average_distance_10p_r = 0
         self.av_st_per_dist_10p_r = 0
-        self.good_risky_right = 0
-        self.bad_risky_right = 0
+        self.risky_right = []
         self.agent_right_states = []
 
 
@@ -101,8 +100,7 @@ class Analyzer:
         self.average_stamina_10p_l = 0
         self.average_distance_10p_l = 0
         self.av_st_per_dist_10p_l = 0
-        self.good_risky_left = 0
-        self.bad_risky_left = 0
+        self.risky_left = []
         self.agent_left_states = []
 
     def draw_heatmap(self, right_team=False, left_team=True):
@@ -367,11 +365,10 @@ class Analyzer:
                     offside_left = agent.data[self.pass_last_kick_cycle]['x']
 
             if ball1[0] > offside_left > ball2[0]:
-                self.check_risky_players(key)
                 if intercept or self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] < offside_left:
-                    self.bad_risky_right += 1
+                    self.risky_right.append(0)
                 else:
-                    self.good_risky_right += 1
+                    self.risky_right.append(1)
         else:
             offside_right = 0
 
@@ -382,19 +379,19 @@ class Analyzer:
             if ball1[0] < offside_right < ball2[0]:
                 self.check_risky_players(key)
                 if intercept or self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] > offside_right:
-                    self.bad_risky_left += 1
+                    self.risky_left.append(0)
                 else:
-                    self.good_risky_left += 1
+                    self.risky_left.append(1)
 
     def check_risky_players(self, key):           
         # Aliados -> Esquerda
-
+        print("chegou")
         ball_x = self.game.ball_pos[self.pass_last_kick_cycle]['x']
         ball_y = self.game.ball_pos[self.pass_last_kick_cycle]['y']
 
         receive_x = self.game.ball_pos[key]['x']
         receive_y = self.game.ball_pos[key]['y']
-        
+
         velocity_x = self.game.ball_pos[self.pass_last_kick_cycle+1]['Vx']
         velocity_y = self.game.ball_pos[self.pass_last_kick_cycle+1]['Vy']
 
@@ -409,7 +406,7 @@ class Analyzer:
             player_data = agent.data[self.pass_last_kick_cycle]
             player_angle = math.atan2(player_data['y'] - ball_y, player_data['x'] - ball_x)
 
-            if self.game.ball_pos[self.pass_last_kick_cycle]['x'] < player_data['x']:
+            if self.game.ball_pos[self.pass_last_kick_cycle]['x'] < agent.data[key]['x']:
                 left_pass_states.append((player_data['x'],player_data['y'], player_data['stamina']))
                 angle_candidates.append(abs(player_angle - pass_angle))
 
@@ -423,7 +420,7 @@ class Analyzer:
             player_data = agent.data[self.pass_last_kick_cycle]
             player_angle = math.atan2(player_data['y'] - ball_y, player_data['x'] - ball_x)
 
-            if self.game.ball_pos[self.pass_last_kick_cycle]['x'] < player_data['x']:
+            if self.game.ball_pos[self.pass_last_kick_cycle]['x'] <  agent.data[key]['x']:
                 right_pass_states.append((player_data['x'],player_data['y'], player_data['stamina']))
                 angle_candidates.append(abs(player_angle - pass_angle))
 
