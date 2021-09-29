@@ -391,9 +391,6 @@ class Analyzer:
         receive_x = self.game.ball_pos[key]['x']
         receive_y = self.game.ball_pos[key]['y']
 
-        velocity_x = self.game.ball_pos[self.pass_last_kick_cycle+1]['Vx']
-        velocity_y = self.game.ball_pos[self.pass_last_kick_cycle+1]['Vy']
-
         pass_angle = math.atan2(receive_y - ball_y, receive_x - ball_x)
 
         left_pass_states = []
@@ -424,7 +421,7 @@ class Analyzer:
                 angle_candidates.append(abs(player_angle - pass_angle))
 
         self.agent_right_states.append((sorted(right_pass_states, key=lambda x: angle_candidates[right_pass_states.index(x)]) + 4*[None])[:4])
-        self.ball_positions.append((ball_x, ball_y, velocity_x, velocity_y))
+        self.ball_positions.append((ball_x, ball_y, pass_angle))
 
     def analyze(self):
         '''pass, shoot, pass intercept, shot intercept, possesion'''
