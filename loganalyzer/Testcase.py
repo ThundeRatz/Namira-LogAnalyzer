@@ -4,11 +4,10 @@ from Parser import *
 from Game import *
 from Analyzer import *
 import numpy as np
-import pandas as pd
 import os
 
-l=os.listdir(os.getcwd())
-li=[x.split('.')[0] for x in l if x.endswith(".rcg")]
+l = os.listdir(os.getcwd())
+li = [x.split('.')[0] for x in l if x.endswith(".rcg")]
 
 li = list(set(li))
 data = []

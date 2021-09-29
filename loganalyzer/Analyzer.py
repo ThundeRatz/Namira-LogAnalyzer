@@ -385,7 +385,6 @@ class Analyzer:
 
     def check_risky_players(self, key):           
         # Aliados -> Esquerda
-        print("chegou")
         ball_x = self.game.ball_pos[self.pass_last_kick_cycle]['x']
         ball_y = self.game.ball_pos[self.pass_last_kick_cycle]['y']
 
