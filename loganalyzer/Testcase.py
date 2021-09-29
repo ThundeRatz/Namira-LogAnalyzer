@@ -5,21 +5,26 @@ from Game import *
 from Analyzer import *
 import numpy as np
 import pandas as pd
+import os
 
-parser = Parser('20210909222921-ThunderLeague_0-vs-oto_0')
+l=os.listdir(os.getcwd())
+li=[x.split('.')[0] for x in l if x.endswith(".rcg")]
 
-game = Game(parser)
-
-analyzer = Analyzer(game)
-analyzer.analyze()
-
-results = analyzer.risky_left
-
+li = list(set(li))
 data = []
-print(len(analyzer.agent_left_states))
-for i in range(len(analyzer.agent_left_states)):
-    aux = [analyzer.agent_left_states[i]] + analyzer.agent_right_states[i] + [analyzer.ball_positions[i]]
-    data.append([item for sublist in aux for item in sublist])
+results = []
+
+for i in li:
+    parser = Parser(i)
+    game = Game(parser)
+    analyzer = Analyzer(game)
+    analyzer.analyze()
+
+    results += analyzer.risky_left
+
+    for i in range(len(analyzer.agent_left_states)):
+        aux = [analyzer.agent_left_states[i]] + analyzer.agent_right_states[i] + [analyzer.ball_positions[i]]
+        data.append([item for sublist in aux for item in sublist])
 
 data = np.transpose(data)
 
