@@ -365,7 +365,7 @@ class Analyzer:
                     offside_left = agent.data[self.pass_last_kick_cycle]['x']
 
             if ball1[0] > offside_left > ball2[0]:
-                if intercept or self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] < offside_left:
+                if intercept or key != 2999 and key != 5999 and self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] < offside_left:
                     self.risky_right.append(0)
                 else:
                     self.risky_right.append(1)
@@ -378,7 +378,7 @@ class Analyzer:
 
             if ball1[0] < offside_right < ball2[0]:
                 self.check_risky_players(key)
-                if intercept or self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] > offside_right:
+                if intercept or key != 2999 and key != 5999 and self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] > offside_right:
                     self.risky_left.append(0)
                 else:
                     self.risky_left.append(1)

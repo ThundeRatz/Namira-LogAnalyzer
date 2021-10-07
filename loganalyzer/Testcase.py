@@ -13,9 +13,9 @@ li = list(set(li))
 data = []
 results = []
 
-for i in li:
-    print("starting:",i)
-    parser = Parser(i)
+for file in li:
+    print("starting:", file)
+    parser = Parser(file)
     game = Game(parser)
     analyzer = Analyzer(game)
     analyzer.analyze()
@@ -23,10 +23,13 @@ for i in li:
     results += analyzer.risky_left
 
     for i in range(len(analyzer.agent_left_states)):
-        aux = [analyzer.agent_left_states[i]] + analyzer.agent_right_states[i] + [analyzer.ball_positions[i]]
-        data.append([item for sublist in aux for item in sublist])
+        try:
+            aux = [analyzer.agent_left_states[i]] + analyzer.agent_right_states[i] + [analyzer.ball_positions[i]]
+            data.append([item for sublist in aux for item in sublist])
+        except:
+            continue
 
-    print("finishing:",i)
+    print("finishing:", file)
 
 data = np.transpose(data)
 
