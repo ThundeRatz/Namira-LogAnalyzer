@@ -6,7 +6,7 @@ from Analyzer import *
 import numpy as np
 import os
 
-files = os.listdir(os.getcwd())
+files = os.listdir(os.getcwd() + "loganalyzer/Data")
 logs = [x.split('.')[0] for file in files if file.endswith(".rcg")]
 logs = list(set(logs))
 
