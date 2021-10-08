@@ -6,31 +6,31 @@ from Analyzer import *
 import numpy as np
 import os
 
-files = os.listdir(os.getcwd() + "loganalyzer/Data")
-logs = [x.split('.')[0] for file in files if file.endswith(".rcg")]
+files = os.listdir(os.getcwd() + "/loganalyzer/Data")
+logs = [file.split('.')[0] for file in files if file.endswith(".rcg")]
 logs = list(set(logs))
 
 data = []
 results = []
 
-for log in logs:
-    print("Starting:", log)
+for i, log in enumerate(logs):
+    print(f"Starting: {i} - {log}")
 
-    parser = Parser(log)
+    parser = Parser("loganalyzer/Data/" + log)
     game = Game(parser)
     analyzer = Analyzer(game)
     analyzer.analyze()
 
     results += analyzer.risky_left
 
-    for i in range(len(analyzer.agent_left_states)):
+    for j in range(len(analyzer.agent_left_states)):
         try:
-            aux = [analyzer.agent_left_states[i]] + analyzer.agent_right_states[i] + [analyzer.ball_positions[i]]
+            aux = [analyzer.agent_left_states[j]] + analyzer.agent_right_states[j] + [analyzer.ball_positions[j]]
             data.append([item for sublist in aux for item in sublist])
         except:
             continue
 
-    print("Finishing:", log)
+    print(f"Finishing: {i} - {log}")
 
 data = np.transpose(data)
 
