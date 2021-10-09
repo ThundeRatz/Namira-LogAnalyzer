@@ -6,7 +6,9 @@ from Analyzer import *
 import numpy as np
 import os
 
-files = os.listdir(os.getcwd() + "/loganalyzer/Data")
+__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+
+files = os.listdir(__location__ + "/Data")
 logs = [file.split('.')[0] for file in files if file.endswith(".rcg")]
 logs = list(set(logs))
 
@@ -16,7 +18,7 @@ results = []
 for i, log in enumerate(logs):
     print(f"Starting: {i} - {log}")
 
-    parser = Parser("loganalyzer/Data/" + log)
+    parser = Parser(__location__+ "/Data/" + log)
     game = Game(parser)
     analyzer = Analyzer(game)
     analyzer.analyze()
