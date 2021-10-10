@@ -38,4 +38,4 @@ data = np.transpose(data)
 np.savetxt("data.txt", data, fmt='%.4f')
 np.savetxt("results.txt", [results], fmt='%d')
 
-#L.x,L.y,L.stm,R.1.x,R.1.y,R.2.x,R.2.y,R.3.x,R.3.y,R.4.x,R.4.y,Ball.x,Ball.y,Pass.Angle
+#L.x,L.y,R.1.x,R.1.y,R.2.x,R.2.y,R.3.x,R.3.y,R.4.x,R.4.y,Ball.x,Ball.y,Pass.Angle
