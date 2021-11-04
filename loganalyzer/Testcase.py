@@ -24,13 +24,9 @@ for i, log in enumerate(logs):
     analyzer.analyze()
 
     for j in range(len(analyzer.agent_left_states)):
-        try:
             aux = [analyzer.agent_left_states[j]] + analyzer.agent_right_states[j] + [analyzer.ball_positions[j]]
             data.append([item for sublist in aux for item in sublist])
             results.append(analyzer.risky_left[j])
-        except:
-            continue
-
     print(f"Finishing: {i} - {log}")
 
 data = np.transpose(data)
