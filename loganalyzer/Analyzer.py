@@ -364,7 +364,7 @@ class Analyzer:
                 if agent.number != 1 and offside_left > agent.data[self.pass_last_kick_cycle]['x']:
                     offside_left = agent.data[self.pass_last_kick_cycle]['x']
 
-            if ball1[0] > offside_left > ball2[0]:
+            if offside_left > ball2[0]:
                 if intercept or key != 2999 and key != 5999 and self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] < offside_left:
                     self.risky_right.append(0)
                 else:
@@ -376,7 +376,7 @@ class Analyzer:
                 if agent.number != 1 and offside_right < agent.data[self.pass_last_kick_cycle]['x']:
                     offside_right = agent.data[self.pass_last_kick_cycle]['x']
 
-            if ball1[0] < offside_right < ball2[0]:
+            if offside_right < ball2[0]:
                 self.check_risky_players(key)
                 if intercept or key != 2999 and key != 5999 and self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] > offside_right:
                     self.risky_left.append(0)
@@ -404,9 +404,6 @@ class Analyzer:
 
             left_pass_states.append((player_data['x'], player_data['y']))
             angle_candidates.append(abs(player_angle - pass_angle))
-
-        if len(angle_candidates) == 0:
-            return
 
         self.agent_left_states.append(sorted(left_pass_states, key=lambda x: angle_candidates[left_pass_states.index(x)])[0])
 
