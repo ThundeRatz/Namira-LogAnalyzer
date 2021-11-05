@@ -377,14 +377,17 @@ class Analyzer:
                     offside_right = agent.data[self.pass_last_kick_cycle]['x']
 
             if offside_right < ball2[0]:
-                self.check_risky_players(key)
-                if intercept or key != 2999 and key != 5999 and self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] > offside_right:
-                    self.risky_left.append(0)
-                else:
-                    self.risky_left.append(1)
+                if self.check_risky_players(key):
+                    if intercept or key != 2999 and key != 5999 and self.game.get_last_kickers(key+1)[0].data[self.pass_last_kick_cycle]['x'] > offside_right:
+                        self.risky_left.append(0)
+                    else:
+                        self.risky_left.append(1)
 
-    def check_risky_players(self, key):           
+    def check_risky_players(self, key):
         # Aliados -> Esquerda
+
+        # print(self.pass_last_kick_cycle)
+
         ball_x = self.game.ball_pos[self.pass_last_kick_cycle]['x']
         ball_y = self.game.ball_pos[self.pass_last_kick_cycle]['y']
 
@@ -400,23 +403,39 @@ class Analyzer:
 
         for agent in self.game.left_team.agents:
             player_data = agent.data[self.pass_last_kick_cycle]
+
+            if math.sqrt((self.pass_last_kicker[0] - player_data[0])**2 + (self.pass_last_kicker[1] - player_data[1])**2) > 40.0:
+                continue
+
             player_angle = math.atan2(player_data['y'] - ball_y, player_data['x'] - ball_x)
 
             left_pass_states.append((player_data['x'], player_data['y']))
             angle_candidates.append(abs(player_angle - pass_angle))
+
+        if len(angle_candidates) == 0:
+            return False
 
         self.agent_left_states.append(sorted(left_pass_states, key=lambda x: angle_candidates[left_pass_states.index(x)])[0])
 
         angle_candidates = []
         for agent in self.game.right_team.agents:
             player_data = agent.data[self.pass_last_kick_cycle]
+
+            if math.sqrt((self.pass_last_kicker[0] - player_data[0])**2 + (self.pass_last_kicker[1] - player_data[1])**2) > 40.0:
+                continue
+
             player_angle = math.atan2(player_data['y'] - ball_y, player_data['x'] - ball_x)
 
             right_pass_states.append((player_data['x'], player_data['y']))
             angle_candidates.append(abs(player_angle - pass_angle))
 
+        if len(angle_candidates) < 4:
+            return False
+
         self.agent_right_states.append((sorted(right_pass_states, key=lambda x: angle_candidates[right_pass_states.index(x)]))[:4])
         self.ball_positions.append((ball_x, ball_y, pass_angle))
+
+        return True
 
     def analyze(self):
         '''pass, shoot, pass intercept, shot intercept, possesion'''
