@@ -399,12 +399,13 @@ class Analyzer:
         left_pass_states = []
         right_pass_states = []
 
+        pass_player = self.pass_last_kicker.data[self.pass_last_kick_cycle]
         angle_candidates = []
 
         for agent in self.game.left_team.agents:
             player_data = agent.data[self.pass_last_kick_cycle]
 
-            if math.sqrt((self.pass_last_kicker[0] - player_data[0])**2 + (self.pass_last_kicker[1] - player_data[1])**2) > 40.0:
+            if math.sqrt((pass_player['x'] - player_data['x'])**2 + (pass_player['y'] - player_data['y'])**2) > 40.0:
                 continue
 
             player_angle = math.atan2(player_data['y'] - ball_y, player_data['x'] - ball_x)
@@ -421,7 +422,7 @@ class Analyzer:
         for agent in self.game.right_team.agents:
             player_data = agent.data[self.pass_last_kick_cycle]
 
-            if math.sqrt((self.pass_last_kicker[0] - player_data[0])**2 + (self.pass_last_kicker[1] - player_data[1])**2) > 40.0:
+            if math.sqrt((pass_player['x'] - player_data['x'])**2 + (pass_player['y'] - player_data['y'])**2) > 40.0:
                 continue
 
             player_angle = math.atan2(player_data['y'] - ball_y, player_data['x'] - ball_x)
