@@ -1,4 +1,4 @@
-from Agent import *
+from .Agent import *
 
 class Team:
     def __init__(self, name, side):

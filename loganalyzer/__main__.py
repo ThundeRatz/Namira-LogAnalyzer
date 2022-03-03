@@ -5,6 +5,8 @@ import json
 from loganalyzer.Game import *
 from loganalyzer.Parser import *
 from loganalyzer.Analyzer import *
+from loganalyzer.custom_analyzers.DangerAnalyzer import DangerAnalyzer
+from loganalyzer.custom_analyzers.RiskyPassesAnalyzer import RiskyPassesAnalyzer
 # from Parser import *
 # from Game import *
 # from Analyzer import *
@@ -12,6 +14,8 @@ from loganalyzer.Analyzer import *
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", help="Input analyzer mode",
+                        required=False, dest="mode")
     parser.add_argument("--path", help="Input file path",
                         required=True, dest='path')
     parser.add_argument(
@@ -123,7 +127,16 @@ def main():
     save_path = args.save_path
     parser = Parser(path)
     game = Game(parser)
-    analyzer = Analyzer(game)
+
+    # instantiate analyzer given input mode
+    if args.mode == "risky_passes":
+        analyzer = RiskyPassesAnalyzer(game)
+    elif args.mode == "danger":
+        analyzer = DangerAnalyzer(game)
+    else:
+        analyzer = Analyzer(game)
+    
+    # Run analyzer and ssave
     analyzer.analyze()
     write_to_file(save_path, analyzer)
 

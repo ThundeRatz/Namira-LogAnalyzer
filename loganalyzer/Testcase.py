@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from Parser import *
-from Game import *
-from Analyzer import *
+from .Parser import *
+from .Game import *
+from .Analyzer import *
 import numpy as np
 import os
 
