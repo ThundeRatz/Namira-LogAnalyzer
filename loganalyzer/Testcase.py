@@ -2,7 +2,7 @@
 
 from .Parser import *
 from .Game import *
-from .Analyzer import *
+from .custom_analyzers.OverallAnalyzer import *
 import numpy as np
 import os
 
@@ -20,7 +20,7 @@ for i, log in enumerate(logs):
 
     parser = Parser(__location__ + "/Data/" + log)
     game = Game(parser)
-    analyzer = Analyzer(game)
+    analyzer = OverallAnalyzer(game)
     analyzer.analyze()
 
     for j in range(len(analyzer.agent_left_states)):

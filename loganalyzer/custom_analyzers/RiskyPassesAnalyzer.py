@@ -20,6 +20,25 @@ class RiskyPassesAnalyzer:
         self.risky_left = []
         self.agent_left_states = []
 
+    def csv_headers(self):
+        NotImplementedError("Risky passes analyzer has no csv headers implementation.")
+
+    def to_csv_line(self):
+        line = []
+
+        for j in range(len(self.agent_left_states)):
+            aux = [self.agent_left_states[j]] + self.agent_right_states[j] + [self.ball_positions[j]]
+            line.append([item for sublist in aux for item in sublist])
+            line.append(self.risky_left[j])
+
+        return line
+
+    def to_dictionary(self):
+        NotImplementedError("Risky passes analyzer has no dictionary parsing implementation.")
+
+    def draw_heatmap(self):
+        NotImplementedError("Risky passes analyzer has no heatmap implementation.")    
+
     def check_pass(self, key):
         if len(self.game.get_last_kickers(key)) > 0:
             if key not in self.play_on_cycles:

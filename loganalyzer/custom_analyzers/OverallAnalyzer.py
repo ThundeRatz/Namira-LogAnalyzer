@@ -21,7 +21,7 @@ class Region:
             return False
 
 
-class Analyzer:
+class OverallAnalyzer:
 
     def __init__(self, game):
 
@@ -85,6 +85,101 @@ class Analyzer:
         self.average_stamina_10p_l = 0
         self.average_distance_10p_l = 0
         self.av_st_per_dist_10p_l = 0
+
+    def csv_headers(self):
+        NotImplementedError("Overall analyzer has no csv headers implementation.")
+
+    def to_csv_line(self):
+        NotImplemented("Overall analyzer has no csv parsing implementation.")
+
+    def to_dictionary(self):
+        right_team_data = {
+            "Right Team": self.game.right_team.name,
+            "True Pass:": self.pass_r,
+            "Intercept:": self.intercept_r,
+            "on_target_shoot:": self.on_target_shoot_r,
+            "off_targ": self.off_target_shoot_r,
+            "Goals :": self.game.right_goal,
+            "Wrong Pass:": self.intercept_l,
+            "Pass in Lenght:": self.pass_in_length_r,
+            "Pass in Width:": self.pass_in_width_r,
+            "Pass Accuracy:": self.pass_accuracy_r,
+            "on_target_shoot:": self.on_target_shoot_r,
+            "off_targ": self.off_target_shoot_r,
+            "Shoot in Lenght": self.shoot_in_length_r,
+            "Shoot in Width": self.shoot_in_width_r,
+            "Shoot Accuracy": self.shoot_accuracy_r,
+            "Possession": self.possession_r,
+            "Stamina": self.used_stamina_agents_r,
+            "moved": self.team_moved_distance_r,
+            "Average Distance 10": self.average_distance_10p_r,
+            "Average Stamina 10": self.average_stamina_10p_r,
+            "Average Stamina Per distance 10": self.av_st_per_dist_10p_r,
+            "Stamina per ": self.used_per_distance_r,
+            "Good risky ": self.good_risky_right,
+            "Bad risky ": self.bad_risky_right
+
+        }
+        # left TEAM
+        left_team_data = {
+            "Left Team": self.game.left_team.name,
+            "True Pass:": self.pass_l,
+            "Intercept:": self.intercept_l,
+            "on_target_shoot:": self.on_target_shoot_l,
+            "off_targ": self.off_target_shoot_l,
+            "Goals :": self.game.left_goal,
+            "Wrong Pass:": self.intercept_r,
+            "Pass in Lenght:": self.pass_in_length_l,
+            "Pass in Width:": self.pass_in_width_l,
+            "Pass Accuracy:": self.pass_accuracy_l,
+            "on_target_shoot:": self.on_target_shoot_l,
+            "off_targ": self.off_target_shoot_l,
+            "Shoot in Lenght": self.shoot_in_length_l,
+            "Shoot in Width": self.shoot_in_width_l,
+            "Shoot Accuracy": self.shoot_accuracy_l,
+            "Possession": self.possession_l,
+            "Stamina": self.used_stamina_agents_l,
+            "moved": self.team_moved_distance_l,
+            "Average Distance 10": self.average_distance_10p_l,
+            "Average Stamina 10": self.average_stamina_10p_l,
+            "Average Stamina Per distance 10": self.av_st_per_dist_10p_l,
+            "Stamina per ": self.used_per_distance_r,
+            "Good risky ": self.good_risky_left,
+            "Bad risky ": self.bad_risky_left
+        }
+
+        ball_in_region_percentage = {}
+        for region in self.regions:
+            ball_in_region_percentage[region.name] = region.ball_in_region_cycles
+
+        # Agent_regions
+        # owner_cycles    : cycles player is ball owner in the region
+        # position_cycles : cycles player is in the region
+        right_team_regions_data = {}
+        for agent in self.game.right_team.agents:
+            agent_data = {}
+            for region in agent.regions:
+                agent_data[region.name] = {
+                    "ownerCycles": region.owner_cycles, "positionCycles": region.position_cycles}
+            right_team_regions_data[agent.number] = agent_data
+        left_team_regions_data = {}
+        for agent in self.game.left_team.agents:
+            agent_data = {}
+            for region in agent.regions:
+                agent_data[region.name] = {
+                    "ownerCycles": region.owner_cycles, "positionCycles": region.position_cycles}
+            left_team_regions_data[agent.number] = agent_data
+        right_team_data['regionData'] = right_team_regions_data
+        left_team_data['regionData'] = left_team_regions_data
+
+        data = {
+            "Game Result": {self.game.left_team.name: self.game.left_goal,
+                            self.game.right_team.name: self.game.right_goal},
+            "right_team": right_team_data,
+            "left_team": left_team_data
+        }
+
+        return data
 
     def draw_heatmap(self, right_team=False, left_team=True):
         import numpy as np
