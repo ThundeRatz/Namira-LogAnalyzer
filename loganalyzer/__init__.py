@@ -7,3 +7,4 @@ from .custom_analyzers.RiskyPassesAnalyzer import RiskyPassesAnalyzer
 from .Agent import Agent
 from .Team import Team
 from .utils import write_csv, write_json
+from .Testcase import run_testcase

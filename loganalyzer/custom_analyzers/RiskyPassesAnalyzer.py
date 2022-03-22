@@ -2,6 +2,7 @@
 
 import math
 
+
 class RiskyPassesAnalyzer:
     def __init__(self, game):
         self.game = game
@@ -21,23 +22,59 @@ class RiskyPassesAnalyzer:
         self.agent_left_states = []
 
     def csv_headers(self):
-        NotImplementedError("Risky passes analyzer has no csv headers implementation.")
+        return [
+            'receiver_x',
+            'receiver_y',
+            'opponent_1_x',
+            'opponent_1_y',
+            'opponent_2_x',
+            'opponent_2_y',
+            'opponent_3_x',
+            'opponent_3_y',
+            'opponent_4_x',
+            'opponent_4_y',
+            'ball_x',
+            'ball_y',
+            'pass_angle',
+            'good_pass'
+        ]
 
     def to_csv_line(self):
         line = []
 
         for j in range(len(self.agent_left_states)):
-            aux = [self.agent_left_states[j]] + self.agent_right_states[j] + [self.ball_positions[j]]
+            aux = [self.agent_left_states[j]] + \
+                self.agent_right_states[j] + [self.ball_positions[j]] + [[self.risky_left[j]]]
             line.append([item for sublist in aux for item in sublist])
-            line.append(self.risky_left[j])
 
         return line
 
     def to_dictionary(self):
-        NotImplementedError("Risky passes analyzer has no dictionary parsing implementation.")
+        dictionaries = []
+
+        for j in range(len(self.agent_left_states)):
+            dictionaries.append({
+                "receiver_x": self.agent_left_states[j][0],
+                "receiver_y": self.agent_left_states[j][1],
+                "opponent_1_x": self.agent_right_states[j][0][0],
+                "opponent_1_y": self.agent_right_states[j][0][1],
+                "opponent_2_x": self.agent_right_states[j][1][0],
+                "opponent_2_y": self.agent_right_states[j][1][1],
+                "opponent_3_x": self.agent_right_states[j][2][0],
+                "opponent_3_y": self.agent_right_states[j][2][1],
+                "opponent_4_x": self.agent_right_states[j][3][0],
+                "opponent_4_x": self.agent_right_states[j][3][1],
+                "ball_x": self.ball_positions[j][0],
+                "ball_y": self.ball_positions[j][1],
+                "pass_angle": self.ball_positions[j][2],
+                "good_pass" : self.risky_left[j] 
+            })
+
+        return dictionaries
 
     def draw_heatmap(self):
-        NotImplementedError("Risky passes analyzer has no heatmap implementation.")    
+        raise NotImplementedError(
+            "Risky passes analyzer has no heatmap implementation.")
 
     def check_pass(self, key):
         if len(self.game.get_last_kickers(key)) > 0:
@@ -57,8 +94,10 @@ class RiskyPassesAnalyzer:
 
                 elif self.pass_last_kicker != self.game.get_last_kickers(key)[0] and self.pass_last_kicker.team == self.game.get_last_kickers(key)[0].team:
                     self.i = self.i + 1
-                    ball1 = (self.game.ball_pos[self.pass_last_kick_cycle]['x'], self.game.ball_pos[self.pass_last_kick_cycle]['y'])
-                    ball2 = (self.game.ball_pos[key]['x'], self.game.ball_pos[key]['y'])
+                    ball1 = (self.game.ball_pos[self.pass_last_kick_cycle]['x'],
+                             self.game.ball_pos[self.pass_last_kick_cycle]['y'])
+                    ball2 = (self.game.ball_pos[key]['x'],
+                             self.game.ball_pos[key]['y'])
 
                     if self.pass_last_kicker.team.name == self.game.right_team.name:
                         self.check_risky_pass(key, ball1, ball2, True, False)
@@ -70,9 +109,11 @@ class RiskyPassesAnalyzer:
                     self.pass_last_kick_cycle = key
 
                 elif self.pass_last_kicker.team != self.game.get_last_kickers(key)[0].team:
-                    ball1 = (self.game.ball_pos[self.pass_last_kick_cycle]['x'], self.game.ball_pos[self.pass_last_kick_cycle]['y'])
+                    ball1 = (self.game.ball_pos[self.pass_last_kick_cycle]['x'],
+                             self.game.ball_pos[self.pass_last_kick_cycle]['y'])
 
-                    ball2 = (self.game.ball_pos[key]['x'], self.game.ball_pos[key]['y'])
+                    ball2 = (self.game.ball_pos[key]['x'],
+                             self.game.ball_pos[key]['y'])
 
                     if self.game.get_last_kickers(key)[0].team.name == self.game.right_team.name:
                         self.check_risky_pass(key, ball1, ball2, False, True)
@@ -138,7 +179,8 @@ class RiskyPassesAnalyzer:
             if math.sqrt((pass_player['x'] - player_data['x'])**2 + (pass_player['y'] - player_data['y'])**2) > 40.0:
                 continue
 
-            player_angle = math.atan2(player_data['y'] - ball_y, player_data['x'] - ball_x)
+            player_angle = math.atan2(
+                player_data['y'] - ball_y, player_data['x'] - ball_x)
 
             left_pass_states.append((player_data['x'], player_data['y']))
             angle_candidates.append(abs(player_angle - pass_angle))
@@ -146,7 +188,8 @@ class RiskyPassesAnalyzer:
         if len(angle_candidates) == 0:
             return False
 
-        self.agent_left_states.append(sorted(left_pass_states, key=lambda x: angle_candidates[left_pass_states.index(x)])[0])
+        self.agent_left_states.append(sorted(
+            left_pass_states, key=lambda x: angle_candidates[left_pass_states.index(x)])[0])
 
         angle_candidates = []
         for agent in self.game.right_team.agents:
@@ -155,7 +198,8 @@ class RiskyPassesAnalyzer:
             if math.sqrt((pass_player['x'] - player_data['x'])**2 + (pass_player['y'] - player_data['y'])**2) > 40.0:
                 continue
 
-            player_angle = math.atan2(player_data['y'] - ball_y, player_data['x'] - ball_x)
+            player_angle = math.atan2(
+                player_data['y'] - ball_y, player_data['x'] - ball_x)
 
             right_pass_states.append((player_data['x'], player_data['y']))
             angle_candidates.append(abs(player_angle - pass_angle))
@@ -163,7 +207,8 @@ class RiskyPassesAnalyzer:
         if len(angle_candidates) < 4:
             return False
 
-        self.agent_right_states.append((sorted(right_pass_states, key=lambda x: angle_candidates[right_pass_states.index(x)]))[:4])
+        self.agent_right_states.append((sorted(
+            right_pass_states, key=lambda x: angle_candidates[right_pass_states.index(x)]))[:4])
         self.ball_positions.append((ball_x, ball_y, pass_angle))
 
         return True

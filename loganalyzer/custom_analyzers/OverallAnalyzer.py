@@ -87,10 +87,10 @@ class OverallAnalyzer:
         self.av_st_per_dist_10p_l = 0
 
     def csv_headers(self):
-        NotImplementedError("Overall analyzer has no csv headers implementation.")
+        raise NotImplementedError("Overall analyzer has no csv headers implementation.")
 
     def to_csv_line(self):
-        NotImplemented("Overall analyzer has no csv parsing implementation.")
+        raise NotImplemented("Overall analyzer has no csv parsing implementation.")
 
     def to_dictionary(self):
         right_team_data = {
@@ -116,9 +116,6 @@ class OverallAnalyzer:
             "Average Stamina 10": self.average_stamina_10p_r,
             "Average Stamina Per distance 10": self.av_st_per_dist_10p_r,
             "Stamina per ": self.used_per_distance_r,
-            "Good risky ": self.good_risky_right,
-            "Bad risky ": self.bad_risky_right
-
         }
         # left TEAM
         left_team_data = {
@@ -144,8 +141,6 @@ class OverallAnalyzer:
             "Average Stamina 10": self.average_stamina_10p_l,
             "Average Stamina Per distance 10": self.av_st_per_dist_10p_l,
             "Stamina per ": self.used_per_distance_r,
-            "Good risky ": self.good_risky_left,
-            "Bad risky ": self.bad_risky_left
         }
 
         ball_in_region_percentage = {}

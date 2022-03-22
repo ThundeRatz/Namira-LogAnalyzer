@@ -26,32 +26,31 @@ def analyze(args):
     else:
         logs = [path]
 
-    parser = Parser(path)
-    game = Game(parser)
-
-    # instantiate analyzer given input mode
-    if args.mode == "risky_passes":
-        analyzer = RiskyPassesAnalyzer(game)
-    elif args.mode == "danger":
-        analyzer = DangerAnalyzer(game)
-    else:
-        analyzer = OverallAnalyzer(game)
-
-
     # Run analyzer and save
     data = []
     for i, log in enumerate(logs):
+        parser = Parser(path + "/" + log) if args.recursive else Parser(path)
+        game = Game(parser)
+
+        # define analyzer
+        if args.mode == "risky_passes":
+            analyzer = RiskyPassesAnalyzer(game)
+        elif args.mode == "danger":
+            analyzer = DangerAnalyzer(game)
+        else:
+            analyzer = OverallAnalyzer(game)
         analyzer.analyze()
         if output_extension == "csv":
-            data.append(analyzer.to_csv_line())
+            data += analyzer.to_csv_line()
         else:
-            data.append(analyzer.to_dictionary())
-        print(f"Finishing: {i} / {len(logs)} - {log}")
+            data += analyzer.to_dictionary()
+        print(f"Finishing: {i + 1} / {len(logs)} - {log}")
 
     if save_path.endswith(".json"):
         write_json(save_path, data)
     elif save_path.endswith(".csv"):
-        write_csv(save_path, data)
+        header = analyzer.csv_headers()
+        write_csv(save_path, data, header)
 
     # Drawing Heatmap of the game
 
