@@ -96,62 +96,66 @@ class DangerAnalyzer:
             lost_ball = True
         return lost_ball, cycle-1
 
+    def opponent_data(self, cycle, i):
+        for agent in self.game.right_team.agents:
+            dx = agent.data[cycle-i]['x'] - self.ball_pos[cycle-i]['x']
+            dy = agent.data[cycle-i]['y'] - self.ball_pos[cycle-i]['y']
+            distance = math.sqrt(dx**2 + dy**2)
+            self.danger_opponent_dis.append(distance)
+            self.danger_opponent_pos[len(self.danger_opponent_dis)][1] = agent.data[cycle-i]['x']
+            self.danger_opponent_pos[len(self.danger_opponent_dis)][2] = agent.data[cycle-i]['y']
+            self.danger_opponent_angle.append(np.arctan(dy/dx))
+
+    def closest_opponent_data(self)
+        for j in range(len(self.danger_opponent_dis)):
+            if self.danger_opponent_dis[j+1] < self.danger_opponent_dis[j]:
+                temp_dis = self.danger_opponent_dis[j]
+                self.danger_opponent_dis[j] = self.danger_opponent_dis[j+1]
+                self.danger_opponent_dis[j+1] = temp_dis
+
+                temp_angle = self.danger_opponent_angle[j]
+                self.danger_opponent_angle[j] = self.danger_opponent_angle[j+1]
+                self.danger_opponent_angle[j+1] = temp_angle
+
+                temp_x = self.danger_opponent_pos[j][1]
+                temp_y = self.danger_oppoent_pos[j][2]
+                self.danger_opponent[j][1] = self.danger_opponent[j+1][1]
+                self.danger_opponent[j+1][1] = temp_x
+                self.danger_opponent[j][2] = self.danger_opponent[j+1][2]
+                self.danger_opponent[j+1][2] = temp_y
+    
+    def teammate_data(self, cycle, i):
+        for agent in self.game.left_team.agents:
+            distance = math.sqrt((agent.data[cycle-i]['x'] - self.ball_pos[cycle-i]['x'])**2 + (agent.data[cycle-i]['y'] - self.ball_pos[cycle-i]['y']) **2)
+            self.danger_teammat_dis.append(distance)
+            self.danger_teammate_pos[len(self.danger_teammate_dis)][1] = agent.data[cycle-i]['x']
+            self.danger_teammate_pos[len(self.danger_teammate_dis)][2] = agent.data[cycle-i]['y']
+
+    def closest_teammate_data(self):
+        for j in range(len(self.danger_teammate_dis)):
+            if self.danger_teammate_dis[j+1] < self.danger_teammate_dis[j]:
+                temp_dis = self.danger_teammate_dis[j]
+                self.danger_teammate_dis[j] = self.danger_teammate_dis[j+1]
+                self.danger_teammate_dis[j+1] = temp_dis
+
+                temp_x = self.danger_teammate_pos[j][1]
+                temp_y = self.danger_teammate_pos[j][2]
+                self.danger_teammate[j][1] = self.danger_teammate[j+1][1]
+                self.danger_teammate[j+1][1] = temp_x
+                self.danger_teammate[j][2] = self.danger_teammate[j+1][2]
+                self.danger_teammate[j+1][2] = temp_y
+
     def check_danger_param(self, cycle):
         if self.check_lost_ball(cycle)[0]:
             for i in range(1,5):
-                for agent in self.game.right_team.agents:
-                    dx = agent.data[cycle-i]['x'] - self.ball_pos[cycle-i]['x']
-                    dy = agent.data[cycle-i]['y'] - self.ball_pos[cycle-i]['y']
-                    distance = math.sqrt(dx**2 + dy**2)
-                    self.danger_opponent_dis.append(distance)
-                    self.danger_opponent_pos[len(self.danger_opponent_dis)][1] = agent.data[cycle-i]['x']
-                    self.danger_opponent_pos[len(self.danger_opponent_dis)][2] = agent.data[cycle-i]['y']
-                    self.danger_opponent_angle.append(np.arctan(dy/dx))
-                    
-                    
-                for j in range(len(self.danger_opponent_dis)):
-                    if self.danger_opponent_dis[j+1] < self.danger_opponent_dis[j]:
-                        temp_dis = self.danger_opponent_dis[j]
-                        self.danger_opponent_dis[j] = self.danger_opponent_dis[j+1]
-                        self.danger_opponent_dis[j+1] = temp_dis
+                self.opponent_data(cycle, i)
+                self.closest_opponent_data()
+                self.teammate_data(cycle, i)       
+                self.closest_teammate_data()
 
-                        temp_angle = self.danger_opponent_angle[j]
-                        self.danger_opponent_angle[j] = self.danger_opponent_angle[j+1]
-                        self.danger_opponent_angle[j+1] = temp_angle
-
-                        temp_x = self.danger_opponent_pos[j][1]
-                        temp_y = self.danger_oppoent_pos[j][2]
-                        self.danger_opponent[j][1] = self.danger_opponent[j+1][1]
-                        self.danger_opponent[j+1][1] = temp_x
-                        self.danger_opponent[j][2] = self.danger_opponent[j+1][2]
-                        self.danger_opponent[j+1][2] = temp_y
-
-                for agent in self.game.left_team.agents:
-                    distance = math.sqrt((agent.data[cycle-i]['x'] - self.ball_pos[cycle-i]['x'])**2 + (agent.data[cycle-i]['y'] - self.ball_pos[cycle-i]['y']) **2)
-                    self.danger_teammat_dis.append(distance)
-                    self.danger_teammate_pos[len(self.danger_teammate_dis)][1] = agent.data[cycle-i]['x']
-                    self.danger_teammate_pos[len(self.danger_teammate_dis)][2] = agent.data[cycle-i]['y']
-                    
-                for j in range(len(self.danger_teammate_dis)):
-                    if self.danger_teammate_dis[j+1] < self.danger_teammate_dis[j]:
-                        temp_dis = self.danger_teammate_dis[j]
-                        self.danger_teammate_dis[j] = self.danger_teammate_dis[j+1]
-                        self.danger_teammate_dis[j+1] = temp_dis
-
-                        temp_x = self.danger_teammate_pos[j][1]
-                        temp_y = self.danger_teammate_pos[j][2]
-                        self.danger_teammate[j][1] = self.danger_teammate[j+1][1]
-                        self.danger_teammate[j+1][1] = temp_x
-                        self.danger_teammate[j][2] = self.danger_teammate[j+1][2]
-                        self.danger_teammate[j+1][2] = temp_y
-        
-                    
-        pass
-
-            
     def analyze(self):
-        """Analyze game."""
-        
+        """Analyze game"""
+
         for cycle in range(1,self.play_on_cycles[-1]+1):
             self.check_pass(cycle)
             self.check_shoot(cycle)
