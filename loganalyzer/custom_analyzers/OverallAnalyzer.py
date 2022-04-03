@@ -90,7 +90,7 @@ class OverallAnalyzer:
         raise NotImplementedError("Overall analyzer has no csv headers implementation.")
 
     def to_csv_line(self):
-        raise NotImplemented("Overall analyzer has no csv parsing implementation.")
+        raise NotImplementedError("Overall analyzer has no csv parsing implementation.")
 
     def to_dictionary(self):
         right_team_data = {
