@@ -11,17 +11,6 @@ class Region:
         self.name = name
         self.ball_in_region_cycles = 0
 
-        # danger parameters
-
-        self.danger_ball_pos = []
-        self.danger_opponent_dis = []
-        self.danger_opponent_pos = np.zeros((11,2))
-        self.danger_opponent_angle = []
-        self.danger_teammate_dis = []
-        self.danger_teammate_pos = np.zeros((11,2))
-        self.danger_stamina = []
-        self.danger_player = []
-
     def in_region(self, x, y):
         '''check if a point (x,y) lies in a rectangle
         with upper left corner (x1,y1) and bottom right corner (x2,y2)'''
@@ -42,6 +31,23 @@ class DangerAnalyzer:
         self.pass_last_kick_cycle = -1
         self.i = 0
         self.ball_owner = 0
+
+        # Temp parameters
+
+        self.temp_opponent_pos = np.zeros((11,2))
+        self.temp_teammate_pos = np.zeros((11,2))
+        self.temp_opponent_angle = []
+
+
+        # Danger parameters
+
+        self.danger_ball_pos = []
+        self.danger_opponent_dis = []
+        self.danger_opponent_pos = []
+        self.danger_opponent_angle = []
+        self.danger_teammate_dis = []
+        self.danger_teammate_pos = []
+        self.danger_player = []
 
         # Special Regions
         self.regions = []
@@ -83,6 +89,39 @@ class DangerAnalyzer:
         self.average_distance_10p_l = 0
         self.av_st_per_dist_10p_l = 0
 
+    def csv_headers(self):
+        return [
+            'ball position',
+            'opponent distance',
+            'opponent 1 position x',
+            'opponent 1 position y',
+            'opponent 2 position x',
+            'opponent 2 position y',
+            'opponent 3 position x',
+            'opponent 3 position y',
+            'opponent angle',
+            'teammate distance',
+            'teammate 1 position x',
+            'teammate 1 position y',
+            'teammate 2 position x',
+            'teammate 2 position y',
+            'teammate 3 position x',
+            'teammate 3 position y',
+            'teammate 4 position x',
+            'teammate 4 position y',
+            'danger player'
+        ]
+
+    def to_csv_line(self):
+        line = []
+
+        for j in range(len(self.agent_lagent_left_stateseft_states)):
+            aux = [self.agent_left_states[j]] + \
+                self.agent_right_states[j] + [self.ball_positions[j]] + [[self.risky_left[j]]]
+            line.append([item for sublist in aux for item in sublist])
+
+        return line
+
     def draw_heatmap(self):
         raise NotImplementedError("Danger analyzer has no heatmap implementation.")
 
@@ -102,8 +141,8 @@ class DangerAnalyzer:
             dy = agent.data[cycle-i]['y'] - self.ball_pos[cycle-i]['y']
             distance = math.sqrt(dx**2 + dy**2)
             self.danger_opponent_dis.append(distance)
-            self.danger_opponent_pos[len(self.danger_opponent_dis)][1] = agent.data[cycle-i]['x']
-            self.danger_opponent_pos[len(self.danger_opponent_dis)][2] = agent.data[cycle-i]['y']
+            self.temp_opponent_pos[len(self.danger_opponent_dis)][1] = agent.data[cycle-i]['x']
+            self.temp_opponent_pos[len(self.danger_opponent_dis)][2] = agent.data[cycle-i]['y']
             self.danger_opponent_angle.append(np.arctan(dy/dx))
 
     def closest_opponent_data(self):
@@ -113,16 +152,18 @@ class DangerAnalyzer:
                 self.danger_opponent_dis[j] = self.danger_opponent_dis[j+1]
                 self.danger_opponent_dis[j+1] = temp_dis
 
-                temp_angle = self.danger_opponent_angle[j]
-                self.danger_opponent_angle[j] = self.danger_opponent_angle[j+1]
-                self.danger_opponent_angle[j+1] = temp_angle
+                temp_angle = self.temp_opponent_angle[j]
+                self.temp_opponent_angle[j] = self.temp_opponent_angle[j+1]
+                self.temp_opponent_angle[j+1] = temp_angle
 
                 temp_x = self.danger_opponent_pos[j][1]
                 temp_y = self.danger_oppoent_pos[j][2]
-                self.danger_opponent[j][1] = self.danger_opponent[j+1][1]
-                self.danger_opponent[j+1][1] = temp_x
-                self.danger_opponent[j][2] = self.danger_opponent[j+1][2]
-                self.danger_opponent[j+1][2] = temp_y
+                self.temp_opponent_pos[j][1] = self.temp_opponent_pos[j+1][1]
+                self.temp_opponent_pos[j+1][1] = temp_x
+                self.temp_opponent_pos[j][2] = self.temp_opponent_pos[j+1][2]
+                self.temp_opponent_pos[j+1][2] = temp_y
+        self.danger_opponent_pos.append(self.temp_opponent_pos[0:3])
+        self.danger_opponent_angle.append(self.temp_opponent_angle[0:3])
     
     def teammate_data(self, cycle, i):
         for agent in self.game.left_team.agents:
@@ -140,10 +181,11 @@ class DangerAnalyzer:
 
                 temp_x = self.danger_teammate_pos[j][1]
                 temp_y = self.danger_teammate_pos[j][2]
-                self.danger_teammate[j][1] = self.danger_teammate[j+1][1]
-                self.danger_teammate[j+1][1] = temp_x
-                self.danger_teammate[j][2] = self.danger_teammate[j+1][2]
-                self.danger_teammate[j+1][2] = temp_y
+                self.temp_teammate_pos[j][1] = self.temp_teammate_pos[j+1][1]
+                self.temp_teammate_pos[j+1][1] = temp_x
+                self.temp_teammate_pos[j][2] = self.temp_teammate_pos[j+1][2]
+                self.temp_teammate_pos[j+1][2] = temp_y
+        self.danger_teammate_pos.append(self.temp_teammate_pos[0:4])
 
     def check_danger_param(self, cycle):
         if self.check_lost_ball(cycle)[0]:
