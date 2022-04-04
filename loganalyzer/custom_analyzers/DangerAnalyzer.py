@@ -106,7 +106,7 @@ class DangerAnalyzer:
             self.danger_opponent_pos[len(self.danger_opponent_dis)][2] = agent.data[cycle-i]['y']
             self.danger_opponent_angle.append(np.arctan(dy/dx))
 
-    def closest_opponent_data(self)
+    def closest_opponent_data(self):
         for j in range(len(self.danger_opponent_dis)):
             if self.danger_opponent_dis[j+1] < self.danger_opponent_dis[j]:
                 temp_dis = self.danger_opponent_dis[j]
