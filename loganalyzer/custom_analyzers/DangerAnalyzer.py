@@ -84,10 +84,10 @@ class DangerAnalyzer:
         self.av_st_per_dist_10p_l = 0
 
     def draw_heatmap(self):
-        NotImplementedError("Danger analyzer has no heatmap implementation.")
+        raise NotImplementedError("Danger analyzer has no heatmap implementation.")
 
     def to_dictionary(self):
-        NotImplementedError("Danger analyzer has no dictionary parsing implementation.")
+        raise NotImplementedError("Danger analyzer has no dictionary parsing implementation.")
     
     def check_lost_ball(self, cycle):
         lost_ball = False

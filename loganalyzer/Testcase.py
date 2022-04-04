@@ -1,37 +1,39 @@
 # -*- coding: utf-8 -*-
 
+from loganalyzer.custom_analyzers.RiskyPassesAnalyzer import RiskyPassesAnalyzer
 from .Parser import *
 from .Game import *
 from .custom_analyzers.OverallAnalyzer import *
 import numpy as np
 import os
 
-__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+def run_testcase():
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-files = os.listdir(__location__ + "/Data")
-logs = [file[:-4] for file in files if file.endswith(".rcg")]
-logs = list(set(logs))
+    files = os.listdir(__location__ + "/../Data")
+    logs = [file[:-4] for file in files if file.endswith(".rcg")]
+    logs = list(set(logs))
 
-data = []
-results = []
+    data = []
+    results = []
 
-for i, log in enumerate(logs):
-    print(f"Starting: {i} - {log}")
+    for i, log in enumerate(logs):
+        print(f"Starting: {i} - {log}")
 
-    parser = Parser(__location__ + "/Data/" + log)
-    game = Game(parser)
-    analyzer = OverallAnalyzer(game)
-    analyzer.analyze()
+        parser = Parser(__location__ + "/../Data/" + log)
+        game = Game(parser)
+        analyzer = RiskyPassesAnalyzer(game)
+        analyzer.analyze()
 
-    for j in range(len(analyzer.agent_left_states)):
-            aux = [analyzer.agent_left_states[j]] + analyzer.agent_right_states[j] + [analyzer.ball_positions[j]]
-            data.append([item for sublist in aux for item in sublist])
-            results.append(analyzer.risky_left[j])
-    print(f"Finishing: {i} - {log}")
+        for j in range(len(analyzer.agent_left_states)):
+                aux = [analyzer.agent_left_states[j]] + analyzer.agent_right_states[j] + [analyzer.ball_positions[j]]
+                data.append([item for sublist in aux for item in sublist])
+                results.append(analyzer.risky_left[j])
+        print(f"Finishing: {i} - {log}")
 
-data = np.transpose(data)
+    data = np.transpose(data)
 
-np.savetxt("data.txt", data, fmt='%.4f')
-np.savetxt("results.txt", [results], fmt='%d')
+    np.savetxt("data.txt", data, fmt='%.4f')
+    np.savetxt("results.txt", [results], fmt='%d')
 
-#L.x,L.y,R.1.x,R.1.y,R.2.x,R.2.y,R.3.x,R.3.y,R.4.x,R.4.y,Ball.x,Ball.y,Pass.Angle
+    #L.x,L.y,R.1.x,R.1.y,R.2.x,R.2.y,R.3.x,R.3.y,R.4.x,R.4.y,Ball.x,Ball.y,Pass.Angle
