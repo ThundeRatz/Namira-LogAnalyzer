@@ -1,0 +1,7 @@
+__pycache__/
+env/
+*.egg-info
+*.rcg
+*.rcl
+*.pyc
+*.txt
