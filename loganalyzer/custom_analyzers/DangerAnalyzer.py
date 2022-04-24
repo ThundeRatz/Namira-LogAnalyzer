@@ -83,6 +83,13 @@ class DangerAnalyzer:
         self.average_distance_10p_l = 0
         self.av_st_per_dist_10p_l = 0
 
+    @staticmethod
+    def csv_headers():
+        raise NotImplementedError("Overall analyzer has no csv headers implementation.")
+
+    def to_csv_line(self):
+        raise NotImplementedError("Overall analyzer has no csv parsing implementation.")
+
     def draw_heatmap(self):
         raise NotImplementedError("Danger analyzer has no heatmap implementation.")
 

@@ -86,7 +86,8 @@ class OverallAnalyzer:
         self.average_distance_10p_l = 0
         self.av_st_per_dist_10p_l = 0
 
-    def csv_headers(self):
+    @staticmethod
+    def csv_headers():
         raise NotImplementedError("Overall analyzer has no csv headers implementation.")
 
     def to_csv_line(self):
