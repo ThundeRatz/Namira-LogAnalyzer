@@ -49,6 +49,7 @@ def analyze(args):
     save_path = args.save_path
 
     output_extension = ""
+    number_of_jobs = 1
 
     if save_path.endswith(".csv"):
         output_extension = "csv"
@@ -63,10 +64,13 @@ def analyze(args):
         logs = list(set(logs))
     else:
         logs = [path]
+    
+    if args.path:
+        number_of_jobs = int(args.path)
 
     # Run analyzer and save
     data = []
-    logs_split = split_list(logs, 12)
+    logs_split = split_list(logs, number_of_jobs)
 
     data_queue = Queue()
     processes = [Process(target=analyze_thread, args=(data_queue, log_list, args, path, output_extension)) for log_list in logs_split]
