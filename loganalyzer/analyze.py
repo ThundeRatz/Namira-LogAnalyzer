@@ -65,8 +65,8 @@ def analyze(args):
     else:
         logs = [path]
     
-    if args.path:
-        number_of_jobs = int(args.path)
+    if args.jobs:
+        number_of_jobs = int(args.jobs)
 
     # Run analyzer and save
     data = []
