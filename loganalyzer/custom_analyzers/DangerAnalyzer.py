@@ -142,11 +142,22 @@ class DangerAnalyzer:
     def to_dictionary(self):
         raise NotImplementedError("Danger analyzer has no dictionary parsing implementation.")
     
+    def check_cycle(self, cycle):
+        min_cycle1 = 6
+        max_cycle1 = 3000
+
+        min_cycle2 = min_cycle1 + 3000
+        max_cycle2 = max_cycle1 + 3000
+
+        if ((min_cycle1 < cycle and cycle < max_cycle1) or 
+            (cycle > min_cycle2 and cycle < max_cycle2)):
+            return True
+
+        return False
+
     def check_lost_ball(self, cycle):
         lost_ball = False
-        # TODO: Pq essa gambiarra funciona ??
-        if (cycle != 3000 and cycle != 3001 and
-            self.game.get_last_kickers(cycle)[0].team.name == self.game.right_team.name and
+        if (self.game.get_last_kickers(cycle)[0].team.name == self.game.right_team.name and
             self.game.get_last_kickers(cycle-1)[0].team.name == self.game.left_team.name):
             lost_ball = True
         return lost_ball, cycle-1
@@ -161,14 +172,11 @@ class DangerAnalyzer:
             dx = agent.data[cycle-i]['x'] - self.game.ball_pos[cycle-i]['x']
             dy = agent.data[cycle-i]['y'] - self.game.ball_pos[cycle-i]['y']
             distance = math.sqrt(dx**2 + dy**2)
-            #self.danger_opponent_dis.append(distance)
             self.temp_opponent_dis.append(distance)
             self.temp_opponent_pos[len(self.temp_opponent_dis) - 1][0] = agent.data[cycle-i]['x']
             self.temp_opponent_pos[len(self.temp_opponent_dis) - 1][1] = agent.data[cycle-i]['y']
-            # self.danger_opponent_angle.append(np.arctan(dy/dx))
             self.temp_opponent_angle.append(np.arctan(dy/dx))
 
-    # TODO: Testar se está pegando os menores termos do array
     def closest_opponent_data(self):
         for k in range(3):
             for j in range(len(self.temp_opponent_dis) - 1, k, -1):
@@ -220,19 +228,20 @@ class DangerAnalyzer:
         self.danger_teammate_pos.append(self.temp_opponent_pos[0:4])
 
     def check_danger_param(self, cycle):
-        if self.check_lost_ball(cycle)[0]:
-            for i in range(5):
-                self.temp_opponent_pos = np.zeros((11,2))
-                self.temp_opponent_dis = []
-                self.temp_teammate_pos = np.zeros((11,2))
-                self.temp_teammate_dis = []
-                self.temp_opponent_angle = []
+        if (self.check_cycle(cycle)):
+            if self.check_lost_ball(cycle)[0]:
+                for i in range(5):
+                    self.temp_opponent_pos = np.zeros((11,2))
+                    self.temp_opponent_dis = []
+                    self.temp_teammate_pos = np.zeros((11,2))
+                    self.temp_teammate_dis = []
+                    self.temp_opponent_angle = []
 
-                self.ball_data(cycle, i)
-                self.opponent_data(cycle, i)
-                self.closest_opponent_data()
-                self.teammate_data(cycle, i)   
-                self.closest_teammate_data()
+                    self.ball_data(cycle, i)
+                    self.opponent_data(cycle, i)
+                    self.closest_opponent_data()
+                    self.teammate_data(cycle, i)   
+                    self.closest_teammate_data()
 
     def analyze(self):
         """Analyze game"""
