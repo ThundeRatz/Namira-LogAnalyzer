@@ -3,7 +3,7 @@ import pandas as pd
 
 from .Game import *
 from .Parser import *
-from .custom_analyzers import DangerAnalyzer, OverallAnalyzer, RiskyPassesAnalyzer
+from .custom_analyzers import DangerAnalyzer, MoiseAnalyzer, OverallAnalyzer, RiskyPassesAnalyzer
 from loganalyzer.utils import write_csv, write_json
 
 def analyze(args):
@@ -37,6 +37,8 @@ def analyze(args):
             analyzer = RiskyPassesAnalyzer(game)
         elif args.mode == "danger":
             analyzer = DangerAnalyzer(game)
+        elif args.mode == "moise":
+            analyzer = MoiseAnalyzer(game)
         else:
             analyzer = OverallAnalyzer(game)
         analyzer.analyze()
