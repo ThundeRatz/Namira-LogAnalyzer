@@ -7,13 +7,20 @@ class MoiseAnalyzer:
         self.game = game
         self.play_on_cycles = game.get_play_on_cycles()
 
-        # Temp parameters
+        # Estimated number of states that will be saved 
+        self.estimated_number_of_states = 100
 
+        # Define defense zone:
+        self.defense_zone = -26.25
+
+        # Team attackers
+        self.attackers = [9, 10, 11]
+
+        # Temp parameters
         self.temp_opponent_pos = np.zeros((11,2))
         self.temp_teammate_pos = np.zeros((11,2))
 
         # Moise parameters
-
         self.ball_pos = []
         self.opponent_pos = []
         self.teammate_pos = []
@@ -85,12 +92,23 @@ class MoiseAnalyzer:
     def to_dictionary(self):
         raise NotImplementedError("Danger analyzer has no dictionary parsing implementation.")
 
-    # TODO: Definir condições para levantar os dados do moise
-    def undefined_condition(self, cycle):
-        if(cycle % 50 == 10):
-            return True
 
-        return False
+    def check_cycle(self, cycle):
+
+        if(cycle % (6000 // self.estimated_number_of_states) != 10):
+            return False
+        
+        elif(self.game.ball_pos[cycle]['x'] < self.defense_zone):
+            return False
+        
+        someone_in_attack = False
+
+        for i in self.attackers:
+            if(self.game.left_team.agents[i-1].data[cycle]['x'] > self.defense_zone):
+                someone_in_attack = True
+                break
+        
+        return someone_in_attack
 
     def clear_temp_parm(self):
         self.temp_opponent_pos = np.zeros((11,2))
@@ -103,6 +121,7 @@ class MoiseAnalyzer:
 
     def opponent_data(self, cycle):
         it = 0
+
         for agent in self.game.right_team.agents:
             self.temp_opponent_pos[it][0] = agent.data[cycle]['x']
             self.temp_opponent_pos[it][1] = agent.data[cycle]['y']
@@ -120,7 +139,7 @@ class MoiseAnalyzer:
         self.teammate_pos.append(self.temp_teammate_pos)
 
     def check_moise_param(self, cycle):
-        if self.undefined_condition(cycle):
+        if self.check_cycle(cycle):
             self.clear_temp_parm()
             self.ball_data(cycle)
             self.opponent_data(cycle)
