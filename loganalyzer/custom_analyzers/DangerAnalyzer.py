@@ -11,7 +11,6 @@ class DangerAnalyzer:
 
 
         # Temp parameters
-
         self.temp_opponent_pos = np.zeros((11,2))
         self.temp_opponent_dis = []
         self.temp_teammate_pos = np.zeros((11,2))
@@ -20,13 +19,17 @@ class DangerAnalyzer:
 
 
         # Danger parameters
-
         self.danger_ball_pos = []
         self.danger_opponent_dis = []
         self.danger_opponent_pos = []
         self.danger_opponent_angle = []
         self.danger_teammate_dis = []
         self.danger_teammate_pos = []
+        self.num_opponents_analyzed = 3
+        self.num_teammates_analyzed = 4
+        self.num_past_cycles_analyzed = 5
+        self.first_cycle_analyzed = self.num_past_cycles_analyzed + 1
+        self.last_cycle_analyzed = 3000
 
     def csv_headers(self):
         
@@ -81,17 +84,14 @@ class DangerAnalyzer:
         raise NotImplementedError("Danger analyzer has no dictionary parsing implementation.")
     
     def check_cycle(self, cycle):
-        min_cycle1 = 6
-        max_cycle1 = 3000
+        min_cycle1 = self.first_cycle_analyzed
+        max_cycle1 = self.last_cycle_analyzed
 
         min_cycle2 = min_cycle1 + 3000
         max_cycle2 = max_cycle1 + 3000
 
-        if ((min_cycle1 < cycle and cycle < max_cycle1) or 
-            (cycle > min_cycle2 and cycle < max_cycle2)):
-            return True
-
-        return False
+        return ((min_cycle1 < cycle and cycle < max_cycle1) or 
+                (cycle > min_cycle2 and cycle < max_cycle2))
 
     def check_lost_ball(self, cycle):
         lost_ball = False
@@ -100,11 +100,13 @@ class DangerAnalyzer:
             lost_ball = True
         return lost_ball, cycle-1
 
+    # Analyzing ball data "i" cycles in the past:
     def ball_data(self, cycle, i):
         x_ball = self.game.ball_pos[cycle-i]['x']
         y_ball = self.game.ball_pos[cycle-i]['y']
         self.danger_ball_pos.append([x_ball, y_ball])
 
+    # Analyzing opponent data "i" cycles in the past:
     def opponent_data(self, cycle, i):
         for agent in self.game.right_team.agents:
             dx = agent.data[cycle-i]['x'] - self.game.ball_pos[cycle-i]['x']
@@ -116,7 +118,7 @@ class DangerAnalyzer:
             self.temp_opponent_angle.append(np.arctan(dy/dx))
 
     def closest_opponent_data(self):
-        for k in range(3):
+        for k in range(self.num_opponents_analyzed):
             for j in range(len(self.temp_opponent_dis) - 1, k, -1):
                 if self.temp_opponent_dis[j] < self.temp_opponent_dis[j-1]:
                     temp_dis = self.temp_opponent_dis[j-1]
@@ -134,21 +136,22 @@ class DangerAnalyzer:
                     self.temp_opponent_pos[j-1][1] = self.temp_opponent_pos[j][1]
                     self.temp_opponent_pos[j][1] = temp_y
         
-        self.danger_opponent_dis.append(self.temp_opponent_dis[0:3])
-        self.danger_opponent_pos.append(self.temp_opponent_pos[0:3])
-        self.danger_opponent_angle.append(self.temp_opponent_angle[0:3])
+        self.danger_opponent_dis.append(self.temp_opponent_dis[0:self.num_opponents_analyzed])
+        self.danger_opponent_pos.append(self.temp_opponent_pos[0:self.num_opponents_analyzed])
+        self.danger_opponent_angle.append(self.temp_opponent_angle[0:self.num_opponents_analyzed])
 
+    # Analyzing teammate data "i" cycles in the past:
     def teammate_data(self, cycle, i):
         for agent in self.game.left_team.agents:
             dx = agent.data[cycle-i]['x'] - self.game.ball_pos[cycle-i]['x']
             dy = agent.data[cycle-i]['y'] - self.game.ball_pos[cycle-i]['y']
             distance = math.sqrt(dx**2 + dy**2)
             self.temp_teammate_dis.append(distance)
-            self.temp_teammate_pos[len(self.temp_teammate_dis) - 1][0] = agent.data[cycle-i]['x']
-            self.temp_teammate_pos[len(self.temp_teammate_dis) - 1][1] = agent.data[cycle-i]['y']
+            self.temp_teammate_pos[len(self.temp_teammate_dis)-1][0] = agent.data[cycle-i]['x']
+            self.temp_teammate_pos[len(self.temp_teammate_dis)-1][1] = agent.data[cycle-i]['y']
 
     def closest_teammate_data(self):
-        for k in range(4):
+        for k in range(self.num_teammates_analyzed):
             for j in range(len(self.temp_teammate_dis) - 1, k, -1):
                 if self.temp_teammate_dis[j] < self.temp_teammate_dis[j-1]:
                     temp_dis = self.temp_teammate_dis[j-1]
@@ -162,13 +165,15 @@ class DangerAnalyzer:
                     self.temp_teammate_pos[j-1][1] = self.temp_teammate_pos[j][1]
                     self.temp_teammate_pos[j][1] = temp_y
         
-        self.danger_teammate_dis.append(self.temp_teammate_dis[0:4])
-        self.danger_teammate_pos.append(self.temp_opponent_pos[0:4])
+        self.danger_teammate_dis.append(self.temp_teammate_dis[0:self.num_teammates_analyzed])
+        self.danger_teammate_pos.append(self.temp_opponent_pos[0:self.num_teammates_analyzed])
 
     def check_danger_param(self, cycle):
         if (self.check_cycle(cycle)):
             if self.check_lost_ball(cycle)[0]:
-                for i in range(5):
+
+                # Analyzing game configuration "i" cycles in the past:
+                for i in range(self.num_past_cycles_analyzed):
                     self.temp_opponent_pos = np.zeros((11,2))
                     self.temp_opponent_dis = []
                     self.temp_teammate_pos = np.zeros((11,2))
@@ -184,5 +189,5 @@ class DangerAnalyzer:
     def analyze(self):
         """Analyze game"""
 
-        for cycle in range(1,self.play_on_cycles[-1]+1):
+        for cycle in range(1, self.play_on_cycles[-1] + 1):
             self.check_danger_param(cycle)
