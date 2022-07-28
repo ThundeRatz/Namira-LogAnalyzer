@@ -31,7 +31,8 @@ class DangerAnalyzer:
         self.first_cycle_analyzed = self.num_past_cycles_analyzed + 1
         self.last_cycle_analyzed = 3000
 
-    def csv_headers(self):
+    @staticmethod
+    def csv_headers():
         
         return [
             'ball position x',

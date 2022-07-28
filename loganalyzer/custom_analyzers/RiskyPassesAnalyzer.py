@@ -21,7 +21,8 @@ class RiskyPassesAnalyzer:
         self.risky_left = []
         self.agent_left_states = []
 
-    def csv_headers(self):
+    @staticmethod
+    def csv_headers():
         return [
             'receiver_x',
             'receiver_y',
