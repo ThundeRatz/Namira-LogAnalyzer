@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from loganalyzer.custom_analyzers.RiskyPassesAnalyzer import RiskyPassesAnalyzer
+from .custom_analyzers.RiskyPassesAnalyzer import RiskyPassesAnalyzer
 from .Parser import *
 from .Game import *
 from .custom_analyzers.OverallAnalyzer import *

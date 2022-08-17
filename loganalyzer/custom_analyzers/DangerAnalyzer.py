@@ -2,38 +2,15 @@
 import math
 import numpy as np
 
-class Region:
-
-    def __init__(self, top_left, bottom_right, name="Unnamed"):
-
-        self.top_left = top_left
-        self.bottom_right = bottom_right
-        self.name = name
-        self.ball_in_region_cycles = 0
-
-    def in_region(self, x, y):
-        '''check if a point (x,y) lies in a rectangle
-        with upper left corner (x1,y1) and bottom right corner (x2,y2)'''
-        if (x > self.top_left[0] and x < self.bottom_right[0] and y > self.top_left[1] and y < self.bottom_right[1]):
-            return True
-        else:
-            return False
-
 class DangerAnalyzer:
 
     def __init__(self, game):
 
         self.game = game
         self.play_on_cycles = game.get_play_on_cycles()
-        self.pass_status = 0  # 0 --> no kick,  1 --> one kicker detected
-        self.shoot_status = 0
-        self.pass_last_kicker = -1
-        self.pass_last_kick_cycle = -1
-        self.i = 0
-        self.ball_owner = 0
+
 
         # Temp parameters
-
         self.temp_opponent_pos = np.zeros((11,2))
         self.temp_opponent_dis = []
         self.temp_teammate_pos = np.zeros((11,2))
@@ -42,55 +19,20 @@ class DangerAnalyzer:
 
 
         # Danger parameters
-
         self.danger_ball_pos = []
         self.danger_opponent_dis = []
         self.danger_opponent_pos = []
         self.danger_opponent_angle = []
         self.danger_teammate_dis = []
         self.danger_teammate_pos = []
+        self.num_opponents_analyzed = 3
+        self.num_teammates_analyzed = 4
+        self.num_past_cycles_analyzed = 5
+        self.first_cycle_analyzed = self.num_past_cycles_analyzed + 1
+        self.last_cycle_analyzed = 3000
 
-        # Special Regions
-        self.regions = []
-        self.regions.append(Region((-52.5, -34), (-17.5, -11), "A"))
-        self.regions.append(Region((-52.5, -11), (-17.5, 11), "B"))
-        self.regions.append(Region((-52.5, 11), (-17.5, 34), "C"))
-        self.regions.append(Region((-17.5, -34), (17.5, -11), "D"))
-        self.regions.append(Region((-17.5, -11), (17.5, 11), "E"))
-        self.regions.append(Region((-17.5, 11), (17.5, 34), "F"))
-        self.regions.append(Region((17.5, -34), (52.5, -11), "G"))
-        self.regions.append(Region((17.5, -11), (52.5, 11), "H"))
-        self.regions.append(Region((17.5, 11), (52.5, 34), "I"))
-
-        # Right TEAM
-        self.status_r = 0  # Winner' 'Loser' 'Draw'
-        self.used_stamina_agents_r = []
-        self.used_per_distance_r = []
-        self.average_stamina_10p_r = 0
-        self.average_distance_10p_r = 0
-        self.av_st_per_dist_10p_r = 0
-
-        # Left TEAM
-        self.status_l = 0  # Winner' 'Loser' 'Draw'
-        self.pass_l = 0
-        self.intercept_l = 0
-        self.pass_in_length_l = 0
-        self.pass_in_width_l = 0
-        self.pass_accuracy_l = 0
-        self.shoot_in_length_l = 0
-        self.shoot_in_width_l = 0
-        self.on_target_shoot_l = 0
-        self.off_target_shoot_l = 0
-        self.shoot_accuracy_l = 0
-        self.possession_l = 0
-        self.used_stamina_agents_l = []
-        self.team_moved_distance_l = []
-        self.used_per_distance_l = []
-        self.average_stamina_10p_l = 0
-        self.average_distance_10p_l = 0
-        self.av_st_per_dist_10p_l = 0
-
-    def csv_headers(self):
+    @staticmethod
+    def csv_headers():
         
         return [
             'ball position x',
@@ -143,17 +85,14 @@ class DangerAnalyzer:
         raise NotImplementedError("Danger analyzer has no dictionary parsing implementation.")
     
     def check_cycle(self, cycle):
-        min_cycle1 = 6
-        max_cycle1 = 3000
+        min_cycle1 = self.first_cycle_analyzed
+        max_cycle1 = self.last_cycle_analyzed
 
         min_cycle2 = min_cycle1 + 3000
         max_cycle2 = max_cycle1 + 3000
 
-        if ((min_cycle1 < cycle and cycle < max_cycle1) or 
-            (cycle > min_cycle2 and cycle < max_cycle2)):
-            return True
-
-        return False
+        return ((min_cycle1 < cycle and cycle < max_cycle1) or 
+                (cycle > min_cycle2 and cycle < max_cycle2))
 
     def check_lost_ball(self, cycle):
         lost_ball = False
@@ -162,11 +101,13 @@ class DangerAnalyzer:
             lost_ball = True
         return lost_ball, cycle-1
 
+    # Analyzing ball data "i" cycles in the past:
     def ball_data(self, cycle, i):
         x_ball = self.game.ball_pos[cycle-i]['x']
         y_ball = self.game.ball_pos[cycle-i]['y']
         self.danger_ball_pos.append([x_ball, y_ball])
 
+    # Analyzing opponent data "i" cycles in the past:
     def opponent_data(self, cycle, i):
         for agent in self.game.right_team.agents:
             dx = agent.data[cycle-i]['x'] - self.game.ball_pos[cycle-i]['x']
@@ -178,7 +119,7 @@ class DangerAnalyzer:
             self.temp_opponent_angle.append(np.arctan(dy/dx))
 
     def closest_opponent_data(self):
-        for k in range(3):
+        for k in range(self.num_opponents_analyzed):
             for j in range(len(self.temp_opponent_dis) - 1, k, -1):
                 if self.temp_opponent_dis[j] < self.temp_opponent_dis[j-1]:
                     temp_dis = self.temp_opponent_dis[j-1]
@@ -196,21 +137,22 @@ class DangerAnalyzer:
                     self.temp_opponent_pos[j-1][1] = self.temp_opponent_pos[j][1]
                     self.temp_opponent_pos[j][1] = temp_y
         
-        self.danger_opponent_dis.append(self.temp_opponent_dis[0:3])
-        self.danger_opponent_pos.append(self.temp_opponent_pos[0:3])
-        self.danger_opponent_angle.append(self.temp_opponent_angle[0:3])
+        self.danger_opponent_dis.append(self.temp_opponent_dis[0:self.num_opponents_analyzed])
+        self.danger_opponent_pos.append(self.temp_opponent_pos[0:self.num_opponents_analyzed])
+        self.danger_opponent_angle.append(self.temp_opponent_angle[0:self.num_opponents_analyzed])
 
+    # Analyzing teammate data "i" cycles in the past:
     def teammate_data(self, cycle, i):
         for agent in self.game.left_team.agents:
             dx = agent.data[cycle-i]['x'] - self.game.ball_pos[cycle-i]['x']
             dy = agent.data[cycle-i]['y'] - self.game.ball_pos[cycle-i]['y']
             distance = math.sqrt(dx**2 + dy**2)
             self.temp_teammate_dis.append(distance)
-            self.temp_teammate_pos[len(self.temp_teammate_dis) - 1][0] = agent.data[cycle-i]['x']
-            self.temp_teammate_pos[len(self.temp_teammate_dis) - 1][1] = agent.data[cycle-i]['y']
+            self.temp_teammate_pos[len(self.temp_teammate_dis)-1][0] = agent.data[cycle-i]['x']
+            self.temp_teammate_pos[len(self.temp_teammate_dis)-1][1] = agent.data[cycle-i]['y']
 
     def closest_teammate_data(self):
-        for k in range(4):
+        for k in range(self.num_teammates_analyzed):
             for j in range(len(self.temp_teammate_dis) - 1, k, -1):
                 if self.temp_teammate_dis[j] < self.temp_teammate_dis[j-1]:
                     temp_dis = self.temp_teammate_dis[j-1]
@@ -224,13 +166,15 @@ class DangerAnalyzer:
                     self.temp_teammate_pos[j-1][1] = self.temp_teammate_pos[j][1]
                     self.temp_teammate_pos[j][1] = temp_y
         
-        self.danger_teammate_dis.append(self.temp_teammate_dis[0:4])
-        self.danger_teammate_pos.append(self.temp_opponent_pos[0:4])
+        self.danger_teammate_dis.append(self.temp_teammate_dis[0:self.num_teammates_analyzed])
+        self.danger_teammate_pos.append(self.temp_opponent_pos[0:self.num_teammates_analyzed])
 
     def check_danger_param(self, cycle):
         if (self.check_cycle(cycle)):
             if self.check_lost_ball(cycle)[0]:
-                for i in range(5):
+
+                # Analyzing game configuration "i" cycles in the past:
+                for i in range(self.num_past_cycles_analyzed):
                     self.temp_opponent_pos = np.zeros((11,2))
                     self.temp_opponent_dis = []
                     self.temp_teammate_pos = np.zeros((11,2))
@@ -246,5 +190,5 @@ class DangerAnalyzer:
     def analyze(self):
         """Analyze game"""
 
-        for cycle in range(1,self.play_on_cycles[-1]+1):
+        for cycle in range(1, self.play_on_cycles[-1] + 1):
             self.check_danger_param(cycle)

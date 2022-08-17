@@ -25,7 +25,8 @@ class MoiseAnalyzer:
         self.opponent_pos = []
         self.teammate_pos = []
 
-    def csv_headers(self):
+    @staticmethod
+    def csv_headers():
         
         return [
             'ball_x',
