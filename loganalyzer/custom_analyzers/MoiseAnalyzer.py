@@ -88,10 +88,10 @@ class MoiseAnalyzer:
         return line
 
     def draw_heatmap(self):
-        raise NotImplementedError("Danger analyzer has no heatmap implementation.")
+        raise NotImplementedError("Moise analyzer has no heatmap implementation.")
 
     def to_dictionary(self):
-        raise NotImplementedError("Danger analyzer has no dictionary parsing implementation.")
+        raise NotImplementedError("Moise analyzer has no dictionary parsing implementation.")
 
 
     def check_cycle(self, cycle):
@@ -122,7 +122,6 @@ class MoiseAnalyzer:
 
     def opponent_data(self, cycle):
         it = 0
-
         for agent in self.game.right_team.agents:
             self.temp_opponent_pos[it][0] = agent.data[cycle]['x']
             self.temp_opponent_pos[it][1] = agent.data[cycle]['y']
