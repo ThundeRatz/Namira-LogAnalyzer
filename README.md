@@ -55,6 +55,10 @@ This analyzer can report following match facts and information:
 To check how to retrieve data, take a look at **Testcase.py** file. 
 #### As a Script
     loganalyzer --path <log file without .rcl or .rcg >
+
+#### In order to use the custom analyzer scripts, run the following command
+    loganalyzer -m <custom_analyzer file without .py> -p <log file without .rcl or .rcg > -r -s <resulting file name with .csv>
+    
 #### As a Module
     import loganalyzer
     from loganalyzer import Parser
