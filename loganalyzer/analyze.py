@@ -43,7 +43,10 @@ def analyze_game(log, i, logs, data, args, path, output_extension):
 def analyze_thread(data_queue, logs, args, path, output_extension):
     thread_data = []
     for i, log in enumerate(logs):
-        analyze_game(log, i, logs, thread_data, args, path, output_extension)
+        try:
+            analyze_game(log, i, logs, thread_data, args, path, output_extension)
+        except:
+            print(f"[ERROR] Skipping: {i + 1} / {len(logs)} - {log}")
     data_queue.put(thread_data)
 
 def analyze(args):
