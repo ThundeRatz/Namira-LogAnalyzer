@@ -5,3 +5,4 @@ env/
 *.rcl
 *.pyc
 *.txt
+*.log.json
