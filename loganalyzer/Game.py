@@ -25,8 +25,8 @@ class Game:
             'x': ball_data[1], 'y': ball_data[2], 'Vx': ball_data[3], 'Vy': ball_data[4]}
 
     def set_game_result(self):
-
-        self.left_goal, self.left_goal = [int(x) for x in self.parser.data_rcg[-1][0][4][2].split(
+        # For rcssserver 16 and older versions, use data_rcg[-1][0][4][2]
+        self.left_goal, self.left_goal = [int(x) for x in self.parser.data_rcg[-2][0][4][2].split(
             self.left_team.name+'_')[1].split('-vs-'+self.right_team.name+'_')]
 
     def set_teams_data(self):
