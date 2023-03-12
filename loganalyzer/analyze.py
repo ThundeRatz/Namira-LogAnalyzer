@@ -1,11 +1,18 @@
 import os
-import pandas as pd
 from multiprocessing import Process, Queue
 
-from .Game import *
-from .Parser import *
-from .custom_analyzers import DangerAnalyzer, MoiseAnalyzer, OverallAnalyzer, RiskyPassesAnalyzer
+import pandas as pd
+
+from loganalyzer.Game import Game
+from loganalyzer.Parser import Parser
+from loganalyzer.custom_analyzers import (
+    DangerAnalyzer,
+    MoiseAnalyzer,
+    OverallAnalyzer,
+    RiskyPassesAnalyzer,
+)
 from loganalyzer.utils import write_csv, write_json
+
 
 def split_list(list_, number):
     if list_ == [] or number < 1:

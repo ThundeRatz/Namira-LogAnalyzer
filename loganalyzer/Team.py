@@ -1,4 +1,4 @@
-from .Agent import *
+from loganalyzer.Agent import Agent
 
 class Team:
     def __init__(self, name, side):
