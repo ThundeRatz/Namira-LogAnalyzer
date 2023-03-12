@@ -175,7 +175,7 @@ class OverallAnalyzer:
             "left_team": left_team_data
         }
 
-        return data
+        return [data]
 
     def draw_heatmap(self, right_team=False, left_team=True):
         import numpy as np
