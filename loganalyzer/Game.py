@@ -2,7 +2,11 @@ from loganalyzer.Team import Team
 
 
 class Game:
-
+    """
+    Class that organizes the logs' information extracted by a `Parser` object,
+    divided accordingly to each team (left team or right team), as well as other
+    general information (ball and play modes info).
+    """
     def __init__(self, parser):
         self.parser = parser
         self.right_goal = 0

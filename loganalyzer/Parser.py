@@ -8,6 +8,9 @@ class Parser:
         self.left_team
 
     def set_data_rcg(self):
+        """
+        Get all the data in the .rcg file and stores it in a list of lists.
+        """
         try:
             f = open(self.path+'.rcg', 'r')
         except:
@@ -86,6 +89,10 @@ class Parser:
         return self.data_rcg
 
     def set_data_rcl(self):
+        """
+        Get all "kick" and "tackle" actions that happens in the game, 
+        storing its occurences in a dictionary.
+        """
         try:
             f = open(self.path+'.rcl', 'r')
         except:

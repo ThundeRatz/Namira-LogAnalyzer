@@ -1,6 +1,9 @@
 from loganalyzer.Agent import Agent
 
 class Team:
+    """
+    Class containing information of a team and its agents.
+    """
     def __init__(self, name, side):
         self.name = name
         self.side = side
