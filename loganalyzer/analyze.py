@@ -4,7 +4,7 @@ from multiprocessing import Process, Queue
 
 from .Game import *
 from .Parser import *
-from .custom_analyzers import DangerAnalyzer, MoiseAnalyzer, OverallAnalyzer, RiskyPassesAnalyzer
+from .custom_analyzers import DangerAnalyzer, MoiseAnalyzer, OverallAnalyzer, RiskyPassesAnalyzer, RegularPassesAnalyzer
 from loganalyzer.utils import write_csv, write_json
 
 def split_list(list_, number):
@@ -94,6 +94,8 @@ def analyze(args):
         write_json(save_path, data)
     elif save_path.endswith(".csv"):
         if args.mode == "risky_passes":
+            header = RiskyPassesAnalyzer.csv_headers()
+        elif args.mode == "regular_passes":
             header = RiskyPassesAnalyzer.csv_headers()
         elif args.mode == "danger":
             header = DangerAnalyzer.csv_headers()
