@@ -1,8 +1,12 @@
-from .Team import *
+from loganalyzer.Team import Team
 
 
 class Game:
-
+    """
+    Class that organizes the logs' information extracted by a `Parser` object,
+    divided accordingly to each team (left team or right team), as well as other
+    general information (ball and play modes info).
+    """
     def __init__(self, parser):
         self.parser = parser
         self.right_goal = 0
@@ -26,8 +30,8 @@ class Game:
 
     def set_game_result(self):
         # For rcssserver 16 and older versions, use data_rcg[-1][0][4][2]
-        self.left_goal, self.right_goal = [int(x) for x in self.parser.data_rcg[-2][0][4][2].split(
-            self.left_team.name+'_')[1].split('-vs-'+self.right_team.name+'_')]
+        self.left_goal, self.right_goal = [int(x.split('_')[-1])
+                                           for x in self.parser.data_rcg[-2][0][4][2].split('-vs-')]
 
     def set_teams_data(self):
         current_play_mode = False

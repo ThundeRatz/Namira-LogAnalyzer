@@ -20,7 +20,9 @@ class Agent_Region:
             return False
 
 class Agent:
-
+    """
+    Contains detailed information of an agent.
+    """
     def __init__(self, number, team):
         self.team              = team
         self.number            = number

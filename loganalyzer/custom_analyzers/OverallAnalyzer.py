@@ -98,17 +98,15 @@ class OverallAnalyzer:
             "Right Team": self.game.right_team.name,
             "True Pass:": self.pass_r,
             "Intercept:": self.intercept_r,
-            "on_target_shoot:": self.on_target_shoot_r,
-            "off_targ": self.off_target_shoot_r,
+            "On target shoot:": self.on_target_shoot_r,
+            "Off target shoot": self.off_target_shoot_r,
             "Goals :": self.game.right_goal,
             "Wrong Pass:": self.intercept_l,
             "Pass in Lenght:": self.pass_in_length_r,
             "Pass in Width:": self.pass_in_width_r,
             "Pass Accuracy:": self.pass_accuracy_r,
-            "on_target_shoot:": self.on_target_shoot_r,
-            "off_targ": self.off_target_shoot_r,
-            "Shoot in Lenght": self.shoot_in_length_r,
-            "Shoot in Width": self.shoot_in_width_r,
+            "Shoot in Lenght": self.shoot_in_length_r, # ?
+            "Shoot in Width": self.shoot_in_width_r, # ?
             "Shoot Accuracy": self.shoot_accuracy_r,
             "Possession": self.possession_r,
             "Stamina": self.used_stamina_agents_r,
@@ -116,22 +114,20 @@ class OverallAnalyzer:
             "Average Distance 10": self.average_distance_10p_r,
             "Average Stamina 10": self.average_stamina_10p_r,
             "Average Stamina Per distance 10": self.av_st_per_dist_10p_r,
-            "Stamina per ": self.used_per_distance_r,
+            "Stamina per distance": self.used_per_distance_r,
         }
-        # left TEAM
+
         left_team_data = {
             "Left Team": self.game.left_team.name,
             "True Pass:": self.pass_l,
             "Intercept:": self.intercept_l,
-            "on_target_shoot:": self.on_target_shoot_l,
-            "off_targ": self.off_target_shoot_l,
+            "On target shoot:": self.on_target_shoot_l,
+            "Off target shoot": self.off_target_shoot_l,
             "Goals :": self.game.left_goal,
             "Wrong Pass:": self.intercept_r,
             "Pass in Lenght:": self.pass_in_length_l,
             "Pass in Width:": self.pass_in_width_l,
             "Pass Accuracy:": self.pass_accuracy_l,
-            "on_target_shoot:": self.on_target_shoot_l,
-            "off_targ": self.off_target_shoot_l,
             "Shoot in Lenght": self.shoot_in_length_l,
             "Shoot in Width": self.shoot_in_width_l,
             "Shoot Accuracy": self.shoot_accuracy_l,
@@ -141,7 +137,7 @@ class OverallAnalyzer:
             "Average Distance 10": self.average_distance_10p_l,
             "Average Stamina 10": self.average_stamina_10p_l,
             "Average Stamina Per distance 10": self.av_st_per_dist_10p_l,
-            "Stamina per ": self.used_per_distance_r,
+            "Stamina per distance": self.used_per_distance_r,
         }
 
         ball_in_region_percentage = {}
@@ -187,7 +183,7 @@ class OverallAnalyzer:
             team =self.game.right_team.agents
         elif(left_team):
             team =self.game.left_team.agents
-        # for cycle in self.play_on_cycles:
+
         for cycle in self.play_on_cycles:
             for agent in team:
                 if(agent.number != 1):
@@ -217,7 +213,7 @@ class OverallAnalyzer:
             return a[0] * b[1] - a[1] * b[0]
         
         xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
-        ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1]) #Typo was here
+        ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
         div = det(xdiff, ydiff)
         if div == 0:
            raise Exception('lines do not intersect!')
@@ -237,8 +233,8 @@ class OverallAnalyzer:
                 p2 = (agent.data[key]['x'],agent.data[key]['y'])
                 if( distance(p1,p2) < 1.6):
                     agent.moved_distance = agent.moved_distance +distance(p1,p2)
-        
-                
+
+
     def update_parameters(self):
         
         if(self.game.left_goal == self.game.right_goal ):

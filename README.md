@@ -1,6 +1,18 @@
 # Namira LogAnalyzer
 Python Script for parsing and analyzing agent2D soccer simulation rcl and rcg log files. This has been used in [NAMIRA TPAS](https://github.com/Farzin-Negahbani/Namira_TPAS),
 a Tournament Planning and Analyzer Software.
+
+## Contents
+- [Why is this useful?](#why-is-this-useful)
+- [Getting started](#getting-started)
+  - [Pre instalation](#pre-installation)
+  - [Instalation](#installation)
+  - [Uninstall](#uninstall)
+- [loganalyzer features](#capabilities-of-this-analyzer)
+- [How to use](#how-to-use)
+- [Publication](#publication)
+- [Questions](#questions)
+
 ## Why is this useful?
 - Generating comprehensive data about your team performance on different matches. 
 - Evaluating different capabilities of your team .
@@ -11,14 +23,24 @@ a Tournament Planning and Analyzer Software.
 You just need python 3.x! and setuptools running on any OS.
 ### Pre Installation
 ##### Ubuntu
-    sudo apt-get update
-    sudo apt-get install python3 python3-setuptools python3-numpy python3-matplotlib
+```bash
+sudo apt-get update
+sudo apt-get install python3 python3-setuptools python3-numpy python3-matplotlib
+```
+
 ### Installation
-    python3 ./setup.py install
+```bash
+python3 ./setup.py install
+```
+
 ### Uninstall
-    python ./setup.py uninstall 
+```bash
+python ./setup.py uninstall 
+```
 
 ## Capabilities of this analyzer
+
+The loganalyzer package documentation can be found [here](loganalyzer/README.md)
 
 This analyzer can report following match facts and information:
 - Pass
@@ -51,26 +73,39 @@ This analyzer can report following match facts and information:
 - Kick count
 - Tackle count
 - Say count
-### How to Use
-To check how to retrieve data, take a look at **Testcase.py** file. 
-#### As a Script
-    loganalyzer --path <log file without .rcl or .rcg >
+## How to Use
 
 #### In order to use the custom analyzer scripts, run the following command
-    loganalyzer -m <custom_analyzer file without .py> -p <log file without .rcl or .rcg > -r -s <resulting file name with .csv>
-    
+```bash
+loganalyzer -m <custom_analyzer file without .py> -p <log file without .rcl or .rcg > -r -s <resulting file name with .csv>
+```
+
+#### To see all the available flags, run    
+```bash
+loganalyzer --help
+```
+
+To check how to retrieve data, take a look at **Testcase.py** file. 
+#### As a Script
+```bash
+loganalyzer --path <log file without .rcl or .rcg >
+```
+
 #### As a Module
-    import loganalyzer
-    from loganalyzer import Parser
-    from loganalyzer import Game
-    from loganalyzer import Analyzer
-    parser = Parser('path to log file without .rcl or .rcg')
-    game = Game(parser)
-    analyzer = Analyzer(game)
-    analyzer.analyze()
-    left_team_pass = analyzer.pass_l 
-    left_team_in_target_shoot = analyzer.in_target_shoot_l 
-    left_team_agent_1 = game.left_team.agents[0].data 
+```python
+import loganalyzer
+from loganalyzer import Parser
+from loganalyzer import Game
+from loganalyzer import Analyzer
+parser = Parser('path to log file without .rcl or .rcg')
+game = Game(parser)
+analyzer = Analyzer(game)
+analyzer.analyze()
+left_team_pass = analyzer.pass_l 
+left_team_in_target_shoot = analyzer.in_target_shoot_l 
+left_team_agent_1 = game.left_team.agents[0].data 
+```
+
 ## Publication
 If you found this work useful please give credits to the authors by citing:
 - Asali, E., Negahbani, F., Tafazzol, S., Maghareh, M.S., Bahmeie, S., Barazandeh, S., Mirian, S., & Moshkelgosha, M. (2018). Namira Soccer 2 D Simulation Team Description Paper 2018. [PDF](https://archive.robocup.info/Soccer/Simulation/2D/TDPs/RoboCup/2018/Namira_SS2D_RC2018_TDP.pdf)

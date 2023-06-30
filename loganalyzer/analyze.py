@@ -1,17 +1,18 @@
 import os
-import pandas as pd
 from multiprocessing import Process, Queue
 
-from .Game import *
-from .Parser import *
-from .custom_analyzers import DangerAnalyzer, MoiseAnalyzer, OverallAnalyzer, RiskyPassesAnalyzer, RegularPassesAnalyzer
-from loganalyzer.utils import write_csv, write_json
+import pandas as pd
 
-def split_list(list_, number):
-    if list_ == [] or number < 1:
-        return list_
-    k, m = divmod(len(list_), number)
-    return (list_[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(number))
+from loganalyzer.Game import Game
+from loganalyzer.Parser import Parser
+from loganalyzer.custom_analyzers import (
+    DangerAnalyzer,
+    MoiseAnalyzer,
+    OverallAnalyzer,
+    RiskyPassesAnalyzer,
+)
+from loganalyzer.utils import write_csv, write_json, split_list
+
 
 def analyze_game(log, i, logs, data, args, path, output_extension):
     parser = Parser(path + "/" + log) if args.recursive else Parser(path)
@@ -45,8 +46,9 @@ def analyze_thread(data_queue, logs, args, path, output_extension):
     for i, log in enumerate(logs):
         try:
             analyze_game(log, i, logs, thread_data, args, path, output_extension)
-        except:
-            print(f"[ERROR] Skipping: {i + 1} / {len(logs)} - {log}")
+        except Exception as e:
+            print(e)
+            print(f"\n[ERROR] Skipping: {i + 1} / {len(logs)} - {log}")
     data_queue.put(thread_data)
 
 def analyze(args):
