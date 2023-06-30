@@ -10,6 +10,7 @@ from loganalyzer.custom_analyzers import (
     MoiseAnalyzer,
     OverallAnalyzer,
     RiskyPassesAnalyzer,
+    RegularPassesAnalyzer
 )
 from loganalyzer.utils import write_csv, write_json, split_list
 
@@ -25,6 +26,8 @@ def analyze_game(log, i, logs, data, args, path, output_extension):
         analyzer = DangerAnalyzer(game)
     elif args.mode == "moise":
         analyzer = MoiseAnalyzer(game)
+    elif args.mode == "regular_passes":
+        analyzer = RegularPassesAnalyzer(game)
     else:
         analyzer = OverallAnalyzer(game)
     try:
@@ -38,7 +41,8 @@ def analyze_game(log, i, logs, data, args, path, output_extension):
         # Drawing Heatmap of the game
         if args.heat_map is not None:
             analyzer.draw_heatmap(right_team=True, left_team=True)
-    except:
+    except Exception as e:
+        print(e)
         print(f"[ERROR] Skipping: {i + 1} / {len(logs)} - {log}")
 
 def analyze_thread(data_queue, logs, args, path, output_extension):

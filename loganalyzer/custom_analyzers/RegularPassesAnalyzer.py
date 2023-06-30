@@ -18,6 +18,9 @@ class RegularPassesAnalyzer:
             'kicker',
             'receiver'
         ]
+    
+    def to_csv_line(self):
+        return ['', '']
 
     def to_dictionary(self):
         dictionaries = []
@@ -33,6 +36,7 @@ class RegularPassesAnalyzer:
     # Note this function is different from the check_pass function present on RiskyPassesPanalyzer, since
     # here we are not interested on the risky cases
     def check_pass(self, key):
+        """Get pass info of a given cycle"""
         
         if len(self.game.get_last_kickers(key)) > 0:
             if key not in self.play_on_cycles:
@@ -59,8 +63,10 @@ class RegularPassesAnalyzer:
                     self.pass_status = 1
                     self.pass_last_kicker = self.game.get_last_kickers(key)[0]
                     self.pass_last_kick_cycle = key    
+        
+                # print(self.pass_last_kicker.number)
 
-        self.player_numbers.append(self.pass_last_kicker.number, self.pass_last_kicker.data[self.pass_last_kick_cycle].number)
+                self.player_numbers.append([self.pass_last_kicker.number, self.pass_last_kicker.data[self.pass_last_kick_cycle]])
 
     def draw_heatmap(self):
         raise NotImplementedError(
