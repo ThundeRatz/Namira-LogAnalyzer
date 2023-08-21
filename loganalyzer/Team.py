@@ -1,9 +1,11 @@
 from loganalyzer.Agent import Agent
 
+
 class Team:
     """
     Class containing information of a team and its agents.
     """
+
     def __init__(self, name, side):
         self.name = name
         self.side = side
@@ -21,13 +23,13 @@ class Team:
     def generate_agents(self):
         agents = []
         for i in range(11):
-            agents += [Agent(i+1, self)]
+            agents += [Agent(i + 1, self)]
         return agents
 
     def set_agents_data(self, cycle, game):
         for i in range(3, len(cycle)):
             if cycle[i][0][0] == self.side:
-                self.agents[cycle[i][0][1]-1].parse_data(cycle[1], cycle[i], game)
+                self.agents[cycle[i][0][1] - 1].parse_data(cycle[1], cycle[i], game)
 
     def get_agent_data(self, number):
-        return self.agents[number-1].get_data()
+        return self.agents[number - 1].get_data()

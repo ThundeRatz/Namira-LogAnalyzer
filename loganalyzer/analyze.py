@@ -56,6 +56,7 @@ def analyze_thread(data_queue, logs, args, path, output_extension):
             print(f"\n[ERROR - Analyze thread] Skipping: {i + 1} / {len(logs)} - {log}")
     data_queue.put(thread_data)
 
+
 def analyze(args):
     path = args.path
     save_path = args.save_path

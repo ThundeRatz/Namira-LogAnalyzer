@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 class ShootAnalyzer:
     def __init__(self, game, log_name):
         self.game = game
@@ -63,15 +64,14 @@ class ShootAnalyzer:
 
     def _get_kick_cycle(self, initial_cycle, final_cycle):
         """
-        Get the cycle of the shoot. It considers that is the last cycle where a 
+        Get the cycle of the shoot. It considers that is the last cycle where a
         'kick' action happened, within the [initial_cycle, final_cycle] interval.
         """
         for cycle in range(final_cycle, initial_cycle - 1, -1):
             if cycle in self.game.parser.rcl_kicks.keys():
                 return cycle
-            
-        return -1
 
+        return -1
 
     def _get_goalie_catch_cycles(self):
         """
@@ -83,16 +83,21 @@ class ShootAnalyzer:
         goalie_catch_cycles = []
         for cycle, playmode_list in self.game.parser.rcl_referee.items():
             for playmode in playmode_list:
-                if "goalie_catch_ball" in playmode and "back_pass" not in playmode \
-                    and abs(self.ball_positions[cycle]["x"]) > ball_near_goal_x:
-                    goalie_catch_cycles.append(cycle) 
+                if (
+                    "goalie_catch_ball" in playmode
+                    and "back_pass" not in playmode
+                    and abs(self.ball_positions[cycle]["x"]) > ball_near_goal_x
+                ):
+                    goalie_catch_cycles.append(cycle)
 
         # Get last 50 cycles info
         for cycle in goalie_catch_cycles:
             min_cycle = max(0, cycle - 50)  # Avoid cycle < 0
-            team_name = self.game.left_team.name \
-                        if self.ball_positions[cycle]["x"] < 0 \
-                        else self.game.right_team.name
+            team_name = (
+                self.game.left_team.name
+                if self.ball_positions[cycle]["x"] < 0
+                else self.game.right_team.name
+            )
             kick_cycle = self._get_kick_cycle(min_cycle, cycle)
 
             for i in range(min_cycle, cycle + 1):
@@ -116,11 +121,16 @@ class ShootAnalyzer:
         """
         goal_max_y = 7
         for cycle in self.play_on_cycles:
-            if abs(self.ball_positions[cycle]["x"]) > 52 and abs(self.ball_positions[cycle]["y"]) > goal_max_y:
+            if (
+                abs(self.ball_positions[cycle]["x"]) > 52
+                and abs(self.ball_positions[cycle]["y"]) > goal_max_y
+            ):
                 min_cycle = max(0, cycle - 50)  # Avoid cycle < 0
-                team_name = self.game.left_team.name \
-                            if self.ball_positions[cycle]["x"] < 0 \
-                            else self.game.right_team.name
+                team_name = (
+                    self.game.left_team.name
+                    if self.ball_positions[cycle]["x"] < 0
+                    else self.game.right_team.name
+                )
                 kick_cycle = self._get_kick_cycle(min_cycle, cycle)
 
                 for i in range(min_cycle, cycle + 1):
@@ -137,7 +147,6 @@ class ShootAnalyzer:
                         ]
                     )
 
-
     def _get_goal_cycles(self):
         """
         Get ball position of the last 50 cycles before a goal has happened,
@@ -146,8 +155,11 @@ class ShootAnalyzer:
 
         for cycle, play_mode in self.game.play_modes.items():
             if play_mode in ["goal_l", "goal_r"]:
-                team_name = self.game.left_team.name if play_mode == "goal_l" else \
-                            self.game.right_team.name
+                team_name = (
+                    self.game.left_team.name
+                    if play_mode == "goal_l"
+                    else self.game.right_team.name
+                )
                 min_cycle = max(0, cycle - 50)  # Avoid cycle < 0
                 kick_cycle = self._get_kick_cycle(min_cycle, cycle)
 
