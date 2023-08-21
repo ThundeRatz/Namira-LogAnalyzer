@@ -90,25 +90,32 @@ class Parser:
 
     def set_data_rcl(self):
         """
-        Get all "kick" and "tackle" actions that happens in the game, 
-        storing its occurences in a dictionary.
+        Extract data from rcl files and store in dict.
+        Current available dicts are:
+            - self.rcl_kick_tackle: get all cycles that simultaneously have a "kick" and a "tackle" action;
+            - self.rcl_referee: get all referee messages (e.g.: play_modes);
+            - self.rcl_kicks: get all cycles where a "kick" action occurs.
         """
         try:
             f = open(self.path+'.rcl', 'r')
         except:
             print("RCL file does not exist")
             exit(1)
+
         self.set_teams_name()
-        self.data_rcl = {}
+
+        self.rcl_kick_tackle = {}
+        self.rcl_referee = {}
+        self.rcl_kicks = {}
+
         lines = f.readlines()
         kick_tackle = {}
         for line in lines:
-            if ("kick" in line or "tackle" in line)and ("kick_" not in line) and ("_kick" not in line):
+            # Get all cycles that simultaneously have a "kick" and a "tackle" action
+            if ("kick" in line or "tackle" in line) and ("kick_" not in line) and ("_kick" not in line):
                 cycle = int(line.split(',')[0])
-                temp = line.split(':')
-                temp2 = temp[0].split('_')
-                number = temp2[len(temp2)-1]
-                team = temp[0].split(' ')[1].replace("_"+number, '')
+                number = line.split(':')[0].split('_')[-1]
+                team = line.split(':')[0].split(' ')[1].replace("_"+number, '')    
                 words = line.split(':')[1].split(')')
                 for word in words:
                     if '(kick' in word:
@@ -126,6 +133,7 @@ class Parser:
                         cycle_data = {'team': team, 'number': int(
                             number), 'action': action}
                         break
+
                 if cycle in kick_tackle:
                     if self.left_team in line:
                         kick_tackle[cycle] = [cycle_data] + kick_tackle[cycle]
@@ -134,9 +142,37 @@ class Parser:
 
                 else:
                     kick_tackle[cycle] = [cycle_data]
+
+            # Get all referee messages (e.g.: play_modes)
+            if "referee" in line:
+                cycle = int(line.split(",")[0])
+                referee_msg = line.split(" ")[-1].split(")")[0]
+                if cycle in self.rcl_referee:
+                    self.rcl_referee[cycle].append(referee_msg)
+                else:
+                    self.rcl_referee.update({
+                        cycle: [referee_msg]
+                    })
+
+            # Get all cycles where a "kick" action occurs
+            if "kick " in line:
+                cycle = int(line.split(",")[0])
+                number = line.split(':')[0].split('_')[-1]
+                team = line.split(':')[0].split(' ')[1].replace("_"+number, '') 
+                kick_msg = line.split("(")[1].split(")")[0]
+                _, power, angle = kick_msg.split(" ")
+                self.rcl_kicks.update({
+                    cycle: {
+                        "team": team,
+                        "player_num": number,
+                        "power": float(power),
+                        "angle": float(angle)
+                    }
+                })
         for cycle in kick_tackle:
             if len(kick_tackle[cycle]) > 1:
-                self.data_rcl[cycle] = kick_tackle[cycle]
+                self.rcl_kick_tackle[cycle] = kick_tackle[cycle]
+
         f.close()
 
     def get_data_rcl(self):
