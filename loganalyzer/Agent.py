@@ -232,23 +232,23 @@ class Agent:
             
         ball_pos = [game.ball_pos[cycle]['x'],game.ball_pos[cycle]['y']]
         if cycle-1 in self.data: 
-            if cycle-1 in game.parser.data_rcl :
-                if self.team.side == 'l' and self.number == game.parser.data_rcl[cycle-1][0]['number']:
-                    if('tackle' ==game.parser.data_rcl[cycle-1][0]['action']):
+            if cycle-1 in game.parser.rcl_kick_tackle :
+                if self.team.side == 'l' and self.number == game.parser.rcl_kick_tackle[cycle-1][0]['number']:
+                    if('tackle' ==game.parser.rcl_kick_tackle[cycle-1][0]['action']):
                         if(body-degree(ball_pos,agent_pos)<30):
                             is_true_tackle = True
                             self.result["true_tackle"]+=[[x,y]]
-                    elif( 'kick' == game.parser.data_rcl[cycle-1][0]['action']):
-                        if(game.parser.data_rcl[cycle-1][0]['degree']-(degree(ball_pos,agent_pos)-bodyDegree)<30):
+                    elif( 'kick' == game.parser.rcl_kick_tackle[cycle-1][0]['action']):
+                        if(game.parser.rcl_kick_tackle[cycle-1][0]['degree']-(degree(ball_pos,agent_pos)-bodyDegree)<30):
                             self.result["true_kick"]+=[[x,y]]
                             is_true_kick = True
-                elif self.team.side=='r' and  self.number == game.parser.data_rcl[cycle-1][1]['number']:
-                    if( 'tackle'==game.parser.data_rcl[cycle-1][1]['action']):
+                elif self.team.side=='r' and  self.number == game.parser.rcl_kick_tackle[cycle-1][1]['number']:
+                    if( 'tackle'==game.parser.rcl_kick_tackle[cycle-1][1]['action']):
                         if(body-degree(ball_pos,agent_pos)<30):
                             self.result["true_tackle"]+=[[x,y]]
                             is_true_tackle = True
-                    elif( 'kick' ==game.parser.data_rcl[cycle-1][1]['action']):
-                        if(game.parser.data_rcl[cycle-1][1]['degree']-(degree(ball_pos,agent_pos)-bodyDegree)<30):
+                    elif( 'kick' ==game.parser.rcl_kick_tackle[cycle-1][1]['action']):
+                        if(game.parser.rcl_kick_tackle[cycle-1][1]['degree']-(degree(ball_pos,agent_pos)-bodyDegree)<30):
                             self.result["true_kick"]+=[[x,y]]
                             is_true_kick = True
             else:
