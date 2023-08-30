@@ -77,8 +77,9 @@ This analyzer can report following match facts and information:
 
 #### In order to use the custom analyzer scripts, run the following command
 ```bash
-loganalyzer -m <custom_analyzer file without .py> -p <log file without .rcl or .rcg > -r -s <resulting file name with .csv>
+loganalyzer -m <custom_analyzer file without .py> -p <folder with the log files> -r -s <resulting file name with .csv>
 ```
+Note that when you use the `-r` flag, the argument after the `-p` flag is a folder, not a single log file.
 
 #### To see all the available flags, run    
 ```bash
