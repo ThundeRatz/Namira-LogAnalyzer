@@ -102,7 +102,7 @@ def analyze(args):
         if args.mode == "risky_passes":
             header = RiskyPassesAnalyzer.csv_headers()
         elif args.mode == "regular_passes":
-            header = RiskyPassesAnalyzer.csv_headers()
+            header = RegularPassesAnalyzer.csv_headers()
         elif args.mode == "danger":
             header = DangerAnalyzer.csv_headers()
         elif args.mode == "moise":
