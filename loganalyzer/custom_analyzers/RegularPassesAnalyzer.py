@@ -7,7 +7,7 @@ class RegularPassesAnalyzer:
         self.pass_last_kick_cycle = -1
         self.i = 0
         self.ball_positions = []
-        self.player_numbers = []
+        self.kick_states = []
 
         self.agent_right_states = []
         self.agent_left_states = []
@@ -15,24 +15,26 @@ class RegularPassesAnalyzer:
     @staticmethod
     def csv_headers():
         return [
+            'cycle',
             'kicker',
             'receiver'
         ]
     
     def to_csv_line(self):
         line = []
-        for j in range(len(self.player_numbers)):
-            aux = self.player_numbers[j]
+        for j in range(len(self.kick_states)):
+            aux = self.kick_states[j]
             line.append([item for item in aux])
         return line
 
     def to_dictionary(self):
         dictionaries = []
 
-        for j in range(len(self.player_numbers)):
+        for j in range(len(self.kick_states)):
             dictionaries.append({
-                "kicker" : self.player_numbers[j][0],
-                "receiver": self.player_numbers[j][1]
+                "cycle" : self.kick_states[j][0],
+                "kicker" : self.kick_states[j][1],
+                "receiver": self.kick_states[j][2]
             })
 
         return dictionaries
@@ -67,10 +69,10 @@ class RegularPassesAnalyzer:
                     self.pass_status = 1
                     self.pass_last_kicker = self.game.get_last_kickers(key)[0]
                     self.pass_last_kick_cycle = key    
-        
-                # print(self.player_numbers)
 
-                self.player_numbers.append([self.pass_last_kicker.number, self.pass_last_kicker.data[self.pass_last_kick_cycle].get('focus_num')])
+                # TO DO: Pegar o number do receiver. O 'focus_num' abaixo eh apenas para teste 
+
+                self.kick_states.append([key, self.pass_last_kicker.number, self.pass_last_kicker.data[self.pass_last_kick_cycle].get('focus_num')])
 
     def draw_heatmap(self):
         raise NotImplementedError(
