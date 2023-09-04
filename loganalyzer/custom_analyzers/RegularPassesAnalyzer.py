@@ -20,7 +20,11 @@ class RegularPassesAnalyzer:
         ]
     
     def to_csv_line(self):
-        return ['', '']
+        line = []
+        for j in range(len(self.player_numbers)):
+            aux = self.player_numbers[j]
+            line.append([item for item in aux])
+        return line
 
     def to_dictionary(self):
         dictionaries = []
@@ -64,9 +68,9 @@ class RegularPassesAnalyzer:
                     self.pass_last_kicker = self.game.get_last_kickers(key)[0]
                     self.pass_last_kick_cycle = key    
         
-                # print(self.pass_last_kicker.number)
+                # print(self.player_numbers)
 
-                self.player_numbers.append([self.pass_last_kicker.number, self.pass_last_kicker.data[self.pass_last_kick_cycle]])
+                self.player_numbers.append([self.pass_last_kicker.number, self.pass_last_kicker.data[self.pass_last_kick_cycle].get('focus_num')])
 
     def draw_heatmap(self):
         raise NotImplementedError(
