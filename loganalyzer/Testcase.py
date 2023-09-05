@@ -1,10 +1,9 @@
 import numpy as np
 import os
 
-from loganalyzer import RiskyPassesAnalyzer
-from loganalyzer import OverallAnalyzer
-from loganalyzer import Parser
-from loganalyzer import Game
+from loganalyzer.custom_analyzers import RiskyPassesAnalyzer, OverallAnalyzer
+from loganalyzer.Parser import Parser
+from loganalyzer.Game import Game
 
 
 def __get_logs():
