@@ -3,7 +3,6 @@ class RegularPassesAnalyzer:
         self.game = game
         self.play_on_cycles = game.get_play_on_cycles()
         self.pass_status = 0  # 0 --> no kick,  1 --> one kicker detected
-        self.pass_previous_kicker = -1
         self.pass_last_kicker = -1
         self.pass_last_kick_cycle = -1
         self.i = 0
@@ -50,7 +49,6 @@ class RegularPassesAnalyzer:
                 self.pass_status = 0
 
             elif self.pass_status == 0:
-                self.pass_previous_kicker = self.pass_last_kicker
                 self.pass_last_kicker = self.game.get_last_kickers(cycle)[0]
                 self.pass_last_kick_cycle = cycle
                 self.pass_status = 1
@@ -64,13 +62,11 @@ class RegularPassesAnalyzer:
                 elif self.pass_last_kicker != self.game.get_last_kickers(cycle)[0] and self.pass_last_kicker.team == self.game.get_last_kickers(cycle)[0].team:
                     self.i = self.i + 1
                     self.pass_status = 1
-                    self.pass_previous_kicker = self.pass_last_kicker
                     self.pass_last_kicker = self.game.get_last_kickers(cycle)[0]
                     self.pass_last_kick_cycle = cycle
 
                 elif self.pass_last_kicker.team != self.game.get_last_kickers(cycle)[0].team:
                     self.pass_status = 1
-                    self.pass_previous_kicker = self.pass_last_kicker
                     self.pass_last_kicker = self.game.get_last_kickers(cycle)[0]
                     self.pass_last_kick_cycle = cycle
 
