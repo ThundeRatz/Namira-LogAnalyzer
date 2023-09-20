@@ -3,6 +3,7 @@ class RegularPassesAnalyzer:
         self.game = game
         self.play_on_cycles = game.get_play_on_cycles()
         self.pass_status = 0  # 0 --> no kick,  1 --> one kicker detected
+        self.pass_previous_kicker = -1
         self.pass_last_kicker = -1
         self.pass_last_kick_cycle = -1
         self.i = 0
@@ -49,6 +50,7 @@ class RegularPassesAnalyzer:
                 self.pass_status = 0
 
             elif self.pass_status == 0:
+                self.pass_previous_kicker = self.pass_last_kicker
                 self.pass_last_kicker = self.game.get_last_kickers(cycle)[0]
                 self.pass_last_kick_cycle = cycle
                 self.pass_status = 1
@@ -62,21 +64,26 @@ class RegularPassesAnalyzer:
                 elif self.pass_last_kicker != self.game.get_last_kickers(cycle)[0] and self.pass_last_kicker.team == self.game.get_last_kickers(cycle)[0].team:
                     self.i = self.i + 1
                     self.pass_status = 1
+                    self.pass_previous_kicker = self.pass_last_kicker
                     self.pass_last_kicker = self.game.get_last_kickers(cycle)[0]
                     self.pass_last_kick_cycle = cycle
 
                 elif self.pass_last_kicker.team != self.game.get_last_kickers(cycle)[0].team:
                     self.pass_status = 1
+                    self.pass_previous_kicker = self.pass_last_kicker
                     self.pass_last_kicker = self.game.get_last_kickers(cycle)[0]
-                    self.pass_last_kick_cycle = cycle    
+                    self.pass_last_kick_cycle = cycle
 
-                # TO DO: Pegar o number do receiver. O 'focus_num' abaixo eh apenas para teste 
-
-                self.kick_states.append([cycle, self.pass_last_kicker.number, self.pass_last_kicker.data[self.pass_last_kick_cycle].get('focus_num')])
+                # Do jeito que ta aqui, ta pegando o ciclo de recebimento
+                if (len(self.kick_states) == 0): # prevent off-by-one error
+                    self.kick_states.append([cycle, self.pass_last_kicker.number, 0])
+                elif (self.pass_last_kicker.number != self.kick_states[len(self.kick_states) - 1][1] and self.pass_last_kicker.team.name == self.game.left_team.name):
+                    self.kick_states[len(self.kick_states) - 1][2] = self.pass_last_kicker.number
+                    self.kick_states.append([cycle, self.pass_last_kicker.number, 0])
 
     def draw_heatmap(self):
         raise NotImplementedError(
-            "Risky passes analyzer has no heatmap implementation.")
+            "Regular passes analyzer has no heatmap implementation.")
     
     def analyze(self):
         '''pass, shoot, pass intercept, shot intercept, possesion'''
