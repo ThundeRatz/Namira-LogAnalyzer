@@ -67,6 +67,8 @@ def run_overall_testcase():
 
     total = len(logs)
 
+    analyzer.draw_heatmap()
+
     print("\nRight team")
     print(f"True pass: {round(r_pass/total, 3)}")
     print(f"Wrong pass: {round(r_wrong_pass/total, 3)}")
