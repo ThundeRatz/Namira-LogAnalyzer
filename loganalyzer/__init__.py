@@ -1,11 +1,12 @@
-from .analyze import analyze
-from .Game import Game
-from .Parser import Parser
-from .custom_analyzers.DangerAnalyzer import DangerAnalyzer
-from .custom_analyzers.MoiseAnalyzer import MoiseAnalyzer
-from .custom_analyzers.OverallAnalyzer import OverallAnalyzer
-from .custom_analyzers.RiskyPassesAnalyzer import RiskyPassesAnalyzer
-from .Agent import Agent
-from .Team import Team
-from .utils import write_csv, write_json
-from .Testcase import run_testcase
+from loganalyzer.analyze import analyze
+from loganalyzer.custom_analyzers import (
+    DangerAnalyzer,
+    MoiseAnalyzer,
+    OverallAnalyzer,
+    RiskyPassesAnalyzer,
+)
+from loganalyzer.Parser import Parser
+from loganalyzer.Game import Game
+from loganalyzer.Agent import Agent
+from loganalyzer.Team import Team
+from loganalyzer.utils import write_csv, write_json
