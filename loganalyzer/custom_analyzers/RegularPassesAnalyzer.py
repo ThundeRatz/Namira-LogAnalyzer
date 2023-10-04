@@ -97,3 +97,4 @@ class RegularPassesAnalyzer:
         print(f"Missed passes: {self.missed_pass_count}")
         print(f"Actual passes: {self.pass_count}")
         print(f"Total pass accuracy: {((100*self.pass_count)/(self.missed_pass_count + self.pass_count)):.2f}%")
+        
