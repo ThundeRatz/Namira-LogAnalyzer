@@ -12,6 +12,7 @@ class ShootAnalyzer:
         self.timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.ball_positions = self.game.ball_pos
         self.play_on_cycles = game.get_play_on_cycles()
+        self.shoot_count = 0
 
     @staticmethod
     def csv_headers():
@@ -25,6 +26,7 @@ class ShootAnalyzer:
             "ball_y",
             "is_shoot",
             "is_goal",
+            "shoot_id",
         ]
 
     def to_csv_line(self):
@@ -36,14 +38,15 @@ class ShootAnalyzer:
         for item in self.shoots_list:
             dictionaries.append(
                 {
-                    "timestamp": str(self.timestamp),
-                    "log_name": self.log_name,
-                    "team_name": item[1],
-                    "cycle": item[2],
-                    "ball_x": item[3],
-                    "ball_y": item[4],
-                    "is_shoot": "Not implemented",
-                    "is_goal": "Not implemented",
+                    "timestamp": item[0],
+                    "log_name": item[1],
+                    "team_name": item[2],
+                    "cycle": item[3],
+                    "ball_x": item[4],
+                    "ball_y": item[5],
+                    "is_shoot": item[6],
+                    "is_goal": item[7],
+                    "shoot_id": item[8],
                 }
             )
 
@@ -111,8 +114,11 @@ class ShootAnalyzer:
                         self.ball_positions[i]["y"],
                         i == kick_cycle,
                         False,
+                        self.shoot_count,
                     ]
                 )
+
+            self.shoot_count += 1
 
     def _get_off_target_cycles(self):
         """
@@ -144,8 +150,11 @@ class ShootAnalyzer:
                             self.ball_positions[i]["y"],
                             i == kick_cycle,
                             False,
+                            self.shoot_count,
                         ]
                     )
+
+                self.shoot_count += 1
 
     def _get_goal_cycles(self):
         """
@@ -174,8 +183,11 @@ class ShootAnalyzer:
                             self.ball_positions[i]["y"],
                             i == kick_cycle,
                             True,
+                            self.shoot_count,
                         ]
                     )
+
+                self.shoot_count += 1
 
     def analyze(self):
         self.get_shoots()
