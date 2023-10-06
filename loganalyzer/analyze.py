@@ -10,6 +10,7 @@ from loganalyzer.custom_analyzers import (
     MoiseAnalyzer,
     OverallAnalyzer,
     RiskyPassesAnalyzer,
+    ShootAnalyzer,
 )
 from loganalyzer.utils import write_csv, write_json, split_list
 
@@ -25,6 +26,8 @@ def analyze_game(log, i, logs, data, args, path, output_extension):
         analyzer = DangerAnalyzer(game)
     elif args.mode == "moise":
         analyzer = MoiseAnalyzer(game)
+    elif args.mode == "shoot":
+        analyzer = ShootAnalyzer(game, log)
     else:
         analyzer = OverallAnalyzer(game)
     try:
@@ -38,8 +41,10 @@ def analyze_game(log, i, logs, data, args, path, output_extension):
         # Drawing Heatmap of the game
         if args.heat_map is not None:
             analyzer.draw_heatmap(right_team=True, left_team=True)
-    except:
-        print(f"[ERROR] Skipping: {i + 1} / {len(logs)} - {log}")
+    except Exception as e:
+        print(e)
+        print(f"[ERROR - Analyze game] Skipping: {i + 1} / {len(logs)} - {log}")
+
 
 def analyze_thread(data_queue, logs, args, path, output_extension):
     thread_data = []
@@ -48,8 +53,9 @@ def analyze_thread(data_queue, logs, args, path, output_extension):
             analyze_game(log, i, logs, thread_data, args, path, output_extension)
         except Exception as e:
             print(e)
-            print(f"\n[ERROR] Skipping: {i + 1} / {len(logs)} - {log}")
+            print(f"\n[ERROR - Analyze thread] Skipping: {i + 1} / {len(logs)} - {log}")
     data_queue.put(thread_data)
+
 
 def analyze(args):
     path = args.path
@@ -71,7 +77,7 @@ def analyze(args):
         logs = list(set(logs))
     else:
         logs = [path]
-    
+
     if args.jobs:
         number_of_jobs = int(args.jobs)
 
@@ -80,7 +86,13 @@ def analyze(args):
     logs_split = split_list(logs, number_of_jobs)
 
     data_queue = Queue()
-    processes = [Process(target=analyze_thread, args=(data_queue, log_list, args, path, output_extension)) for log_list in logs_split]
+    processes = [
+        Process(
+            target=analyze_thread,
+            args=(data_queue, log_list, args, path, output_extension),
+        )
+        for log_list in logs_split
+    ]
 
     for process in processes:
         process.start()
@@ -101,6 +113,8 @@ def analyze(args):
             header = DangerAnalyzer.csv_headers()
         elif args.mode == "moise":
             header = MoiseAnalyzer.csv_headers()
+        elif args.mode == "shoot":
+            header = ShootAnalyzer.csv_headers()
         else:
             header = OverallAnalyzer.csv_headers()
         write_csv(save_path, data, header)

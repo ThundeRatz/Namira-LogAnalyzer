@@ -10,3 +10,5 @@ env/
 *.pyc
 *.txt
 *.log.json
+
+settings.json
