@@ -10,7 +10,7 @@ from loganalyzer.custom_analyzers import (
     MoiseAnalyzer,
     OverallAnalyzer,
     RiskyPassesAnalyzer,
-    RegularPassesAnalyzer
+    RegularPassesAnalyzer,
     ShootAnalyzer,
 )
 from loganalyzer.utils import write_csv, write_json, split_list
