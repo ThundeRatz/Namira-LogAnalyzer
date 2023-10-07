@@ -10,6 +10,7 @@ from loganalyzer.custom_analyzers import (
     MoiseAnalyzer,
     OverallAnalyzer,
     RiskyPassesAnalyzer,
+    RegularPassesAnalyzer
     ShootAnalyzer,
 )
 from loganalyzer.utils import write_csv, write_json, split_list
@@ -26,6 +27,8 @@ def analyze_game(log, i, logs, data, args, path, output_extension):
         analyzer = DangerAnalyzer(game)
     elif args.mode == "moise":
         analyzer = MoiseAnalyzer(game)
+    elif args.mode == "regular_passes":
+        analyzer = RegularPassesAnalyzer(game)
     elif args.mode == "shoot":
         analyzer = ShootAnalyzer(game, log)
     else:
@@ -44,6 +47,7 @@ def analyze_game(log, i, logs, data, args, path, output_extension):
     except Exception as e:
         print(e)
         print(f"[ERROR - Analyze game] Skipping: {i + 1} / {len(logs)} - {log}")
+
 
 
 def analyze_thread(data_queue, logs, args, path, output_extension):
@@ -109,6 +113,8 @@ def analyze(args):
     elif save_path.endswith(".csv"):
         if args.mode == "risky_passes":
             header = RiskyPassesAnalyzer.csv_headers()
+        elif args.mode == "regular_passes":
+            header = RegularPassesAnalyzer.csv_headers()
         elif args.mode == "danger":
             header = DangerAnalyzer.csv_headers()
         elif args.mode == "moise":
