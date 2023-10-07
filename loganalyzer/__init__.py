@@ -5,6 +5,7 @@ from loganalyzer.custom_analyzers import (
     OverallAnalyzer,
     RiskyPassesAnalyzer,
     RegularPassesAnalyzer,
+    ShootAnalyzer,
 )
 from loganalyzer.Parser import Parser
 from loganalyzer.Game import Game

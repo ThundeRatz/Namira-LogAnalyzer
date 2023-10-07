@@ -1,8 +1,14 @@
 __pycache__/
+
+build/
+dist/
 env/
+
 *.egg-info
 *.rcg
 *.rcl
 *.pyc
 *.txt
 *.log.json
+
+settings.json
